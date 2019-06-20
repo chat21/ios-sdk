@@ -6,7 +6,7 @@ s.name = "Chat21"
 s.summary = "Chat21 lets you add instant messaging to your iOS App."
 s.requires_arc = true
 
-s.version = "0.8.11"
+s.version = "0.8.12"
 
 s.license = { :type => "MIT", :file => "LICENSE" }
 
@@ -28,7 +28,7 @@ s.dependency 'Firebase/Storage'
 
 s.source_files  = "Chat21/**/*.{h,m}"
 s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets,plist}"
-s.resource_bundle = { 'Resources' => 'Chat21/Chat21Core/Resources/*.{lproj}/*.strings' }
+s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}/*.strings' }
 
 # s.resource_bundle = { "my_bundle_name" => ["my_component_directory/*.lproj/*.strings"] }
 
