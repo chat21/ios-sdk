@@ -93,7 +93,7 @@ static NSString *COPY_LINK_KEY = @"Copy link";
     //    //        QBPopupMenuItem *item2 = [QBPopupMenuItem itemWithImage:[UIImage imageNamed:@"image"] target:self action:@selector(action:)];
     //    self.popupMenu = [[QBPopupMenu alloc] initWithItems:@[itemCopy]];
     
-    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle[ChatLocal translate:@"copy"]target:self action:@selector(copy_action:)];
+    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"copy"] target:self action:@selector(copy_action:)];
     QBPopupMenuItem *item_info = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"info"] target:self action:@selector(info_action:)];
 //    QBPopupMenuItem *item_delete = [QBPopupMenuItem itemWithTitle:@"Copia" target:self action:@selector(delete_action:)];
     
