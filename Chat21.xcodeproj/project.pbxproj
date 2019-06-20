@@ -822,13 +822,21 @@
 		B275AA8122BBD0EA00E2D388 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B275A97322BB734200E2D388 /* Chat.storyboard */,
+				B275AA8222BC0CE100E2D388 /* storyboards */,
 				B275A97022BB734200E2D388 /* sounds */,
 				B275A93B22BB734200E2D388 /* images */,
 				B275A92722BB734200E2D388 /* xib */,
 				B275A8E622BB734200E2D388 /* Chat.strings */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		B275AA8222BC0CE100E2D388 /* storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				B275A97322BB734200E2D388 /* Chat.storyboard */,
+			);
+			path = storyboards;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
