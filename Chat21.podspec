@@ -6,7 +6,7 @@ s.name = "Chat21"
 s.summary = "Chat21 lets you add instant messaging to your iOS App."
 s.requires_arc = true
 
-s.version = "0.8.14"
+s.version = "0.8.15"
 
 s.license = { :type => "MIT", :file => "LICENSE" }
 
@@ -27,15 +27,10 @@ s.dependency 'Firebase/Messaging'
 s.dependency 'Firebase/Storage'
 
 s.source_files  = "Chat21/**/*.{h,m}"
-s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets}"
-# s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}/*.strings' }
-s.resource_bundles = {
-    'Chat' => [
-        'Chat21/**/*.{lproj}/*.strings'
-    ]
-  }
 
-# s.resource_bundle = { "my_bundle_name" => ["Chat21/*.lproj/*.strings"] }
+# MOVES FILES IN RESOURCES FOLDER - IN POD'S ROOT FOLDER
+s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets}"
+s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}' }
 
 s.public_header_files = 'Chat21/**/*.h'
 

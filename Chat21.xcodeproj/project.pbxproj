@@ -471,6 +471,7 @@
 		B275A8C122BB6ACE00E2D388 = {
 			isa = PBXGroup;
 			children = (
+				B275AA8122BBD0EA00E2D388 /* Resources */,
 				B275A8CD22BB6ACE00E2D388 /* Chat21 */,
 				B275A8D822BB6ACE00E2D388 /* Chat21Tests */,
 				B275A8CC22BB6ACE00E2D388 /* Products */,
@@ -511,7 +512,6 @@
 		B275A8E522BB734200E2D388 /* Chat21Core */ = {
 			isa = PBXGroup;
 			children = (
-				B275AA8122BBD0EA00E2D388 /* Resources */,
 				B275A8E822BB734200E2D388 /* Chat-Services.plist */,
 				B275A8E922BB734200E2D388 /* util */,
 				B275A8F922BB734200E2D388 /* ChatManager.h */,
@@ -607,12 +607,9 @@
 		B275A92622BB734200E2D388 /* Chat21UI */ = {
 			isa = PBXGroup;
 			children = (
-				B275A92722BB734200E2D388 /* xib */,
 				B275A92C22BB734200E2D388 /* util */,
-				B275A93B22BB734200E2D388 /* images */,
 				B275A96222BB734200E2D388 /* ChatUIManager.m */,
 				B275A96322BB734200E2D388 /* QBPopupMenu */,
-				B275A97022BB734200E2D388 /* sounds */,
 				B275A97322BB734200E2D388 /* Chat.storyboard */,
 				B275A97422BB734200E2D388 /* view */,
 				B275A9BA22BB734200E2D388 /* ChatUIManager.h */,
@@ -826,6 +823,9 @@
 		B275AA8122BBD0EA00E2D388 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B275A97022BB734200E2D388 /* sounds */,
+				B275A93B22BB734200E2D388 /* images */,
+				B275A92722BB734200E2D388 /* xib */,
 				B275A8E622BB734200E2D388 /* Chat.strings */,
 			);
 			path = Resources;
