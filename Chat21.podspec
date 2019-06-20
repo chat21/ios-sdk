@@ -30,7 +30,8 @@ s.source_files  = "Chat21/**/*.{h,m}"
 
 # MOVES FILES IN RESOURCES FOLDER - IN POD'S ROOT FOLDER
 s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets}"
-s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}' }
+# s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}' }
+s.ios.resource_bundle = { 'MapBox' => 'Chat21/**/*.{lproj}/*.strings' }
 
 s.public_header_files = 'Chat21/**/*.h'
 
