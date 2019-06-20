@@ -512,7 +512,6 @@
 		B275A8E522BB734200E2D388 /* Chat21Core */ = {
 			isa = PBXGroup;
 			children = (
-				B275A8E822BB734200E2D388 /* Chat-Services.plist */,
 				B275A8E922BB734200E2D388 /* util */,
 				B275A8F922BB734200E2D388 /* ChatManager.h */,
 				B275A8FB22BB734200E2D388 /* model */,
@@ -822,6 +821,7 @@
 		B275AA8122BBD0EA00E2D388 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B275A8E822BB734200E2D388 /* Chat-Services.plist */,
 				B275AA8222BC0CE100E2D388 /* storyboards */,
 				B275A97022BB734200E2D388 /* sounds */,
 				B275A93B22BB734200E2D388 /* images */,
