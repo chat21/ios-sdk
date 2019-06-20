@@ -6,7 +6,7 @@ s.name = "Chat21"
 s.summary = "Chat21 lets you add instant messaging to your iOS App."
 s.requires_arc = true
 
-s.version = "0.8.8"
+s.version = "0.8.10"
 
 s.license = { :type => "MIT", :file => "LICENSE" }
 
@@ -14,7 +14,7 @@ s.author = { "Andrea Sponziello" => "andreasponziello@gmail.com" }
 
 s.homepage = "http://www.chat21.org"
 
-s.source = { :git => "https://github.com/chat21/Chat21iOSSDK.git", :tag => "#{s.version}" }
+s.source = { :git => "https://github.com/chat21/ios-sdk.git", :tag => "#{s.version}" }
 
 s.static_framework = true
 s.dependency 'SVProgressHUD'
