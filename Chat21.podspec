@@ -6,7 +6,7 @@ s.name = "Chat21"
 s.summary = "Chat21 lets you add instant messaging to your iOS App."
 s.requires_arc = true
 
-s.version = "0.8.18"
+s.version = "0.8.19"
 
 s.license = { :type => "MIT", :file => "LICENSE" }
 
