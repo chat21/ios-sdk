@@ -116,18 +116,11 @@
     
     UIAlertController * alert =   [UIAlertController
                                    alertControllerWithTitle:nil
-                                   message:NSLocalizedString(@"Change Profile Photo", nil)
+                                   message:[ChatLocal translate:@"Change Profile Photo"]
                                    preferredStyle:UIAlertControllerStyleActionSheet];
-//    UIAlertAction* delete = [UIAlertAction
-//                             actionWithTitle:NSLocalizedString(@"Remove Current Photo", nil)
-//                             style:UIAlertActionStyleDestructive
-//                             handler:^(UIAlertAction * action)
-//                             {
-//                                 [self deleteImage];
-//                             }];
     
     UIAlertAction* show = [UIAlertAction
-                           actionWithTitle:NSLocalizedString(@"Show Photo", nil)
+                           actionWithTitle:[ChatLocal translate:@"Show Photo"]
                            style:UIAlertActionStyleDefault
                            handler:^(UIAlertAction * action)
                            {
@@ -136,7 +129,7 @@
                            }];
     
     UIAlertAction* photo = [UIAlertAction
-                            actionWithTitle:NSLocalizedString(@"Photo", nil)
+                            actionWithTitle:[ChatLocal translate:@"Photo"]
                             style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction * action)
                             {
@@ -144,15 +137,14 @@
                                 [self takePhoto];
                             }];
     UIAlertAction* photo_from_library = [UIAlertAction
-                                         actionWithTitle:NSLocalizedString(@"Photo from library", nil)
+                                         actionWithTitle:[ChatLocal translate:@"Photo from library"]
                                          style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction * action)
                                          {
-                                             NSLog(@"Open photo");
                                              [self chooseExisting];
                                          }];
     UIAlertAction* cancel = [UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"Cancel", nil)
+                             actionWithTitle:[ChatLocal translate:@"Cancel"]
                              style:UIAlertActionStyleCancel
                              handler:^(UIAlertAction * action)
                              {

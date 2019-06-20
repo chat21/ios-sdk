@@ -81,7 +81,6 @@
     if (self.isModal) {
         UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelAction)];
         [self.navigationItem setLeftBarButtonItem:leftBarButton];
-        //self.cancelButton.title = NSLocalizedString(@"cancel", nil);
     }
     
     // hide stop-test-mode button
@@ -452,18 +451,10 @@
 - (IBAction)addContentAction:(id)sender {
         UIAlertController * alert =   [UIAlertController
                                      alertControllerWithTitle:nil
-                                     message:NSLocalizedString(@"Attach", nil)
+                                     message:[ChatLocal translate:@"Attach"]
                                      preferredStyle:UIAlertControllerStyleActionSheet];
-//        UIAlertAction* dropbox = [UIAlertAction
-//                               actionWithTitle:NSLocalizedString(@"Dropbox", nil)
-//                               style:UIAlertActionStyleDefault
-//                               handler:^(UIAlertAction * action)
-//                               {
-//                                   NSLog(@"Open dropbox");
-//                                   [self openDropbox];
-//                               }];
         UIAlertAction* photo = [UIAlertAction
-                              actionWithTitle:NSLocalizedString(@"Photo", nil)
+                              actionWithTitle:[ChatLocal translate:@"Photo"]
                               style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction * action)
                               {
@@ -471,7 +462,7 @@
                                   [self takePhoto];
                               }];
         UIAlertAction* photo_from_library = [UIAlertAction
-                            actionWithTitle:NSLocalizedString(@"Photo from library", nil)
+                            actionWithTitle:[ChatLocal translate:@"Photo from library"]
                             style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction * action)
                             {
@@ -479,7 +470,7 @@
                                 [self chooseExisting];
                             }];
         UIAlertAction* cancel = [UIAlertAction
-                                 actionWithTitle:NSLocalizedString(@"Cancel", nil)
+                                 actionWithTitle:[ChatLocal translate:@"Cancel"]
                                  style:UIAlertActionStyleCancel
                                  handler:^(UIAlertAction * action)
                                  {

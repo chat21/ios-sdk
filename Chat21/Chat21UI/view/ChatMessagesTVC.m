@@ -63,14 +63,14 @@ static NSString *COPY_LINK_KEY = @"Copy link";
     //    //        QBPopupMenuItem *item2 = [QBPopupMenuItem itemWithImage:[UIImage imageNamed:@"image"] target:self action:@selector(action:)];
     //    self.popupMenu = [[QBPopupMenu alloc] initWithItems:@[itemCopy]];
     NSMutableArray *items = [[NSMutableArray alloc] init];
-    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle:NSLocalizedString(@"copy", nil) target:self action:@selector(copy_action:)];
+    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"copy"] target:self action:@selector(copy_action:)];
     [items addObject:item_copy];
-    QBPopupMenuItem *item_info = [QBPopupMenuItem itemWithTitle:NSLocalizedString(@"info", nil) target:self action:@selector(info_action:)];
+    QBPopupMenuItem *item_info = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"info"] target:self action:@selector(info_action:)];
     [items addObject:item_info];
 //     @[item_copy, item_info];
     
     if (self.selectedMessage.status == MSG_STATUS_FAILED) {
-        QBPopupMenuItem *item_resend = [QBPopupMenuItem itemWithTitle:NSLocalizedString(@"resend", nil) target:self action:@selector(resend_action:)];
+        QBPopupMenuItem *item_resend = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"resend"] target:self action:@selector(resend_action:)];
         [items addObject:item_resend];
     }
     //    QBPopupMenuItem *item_delete = [QBPopupMenuItem itemWithTitle:@"Copia" target:self action:@selector(delete_action:)];
@@ -93,8 +93,8 @@ static NSString *COPY_LINK_KEY = @"Copy link";
     //    //        QBPopupMenuItem *item2 = [QBPopupMenuItem itemWithImage:[UIImage imageNamed:@"image"] target:self action:@selector(action:)];
     //    self.popupMenu = [[QBPopupMenu alloc] initWithItems:@[itemCopy]];
     
-    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle:NSLocalizedString(@"copy", nil) target:self action:@selector(copy_action:)];
-    QBPopupMenuItem *item_info = [QBPopupMenuItem itemWithTitle:NSLocalizedString(@"info", nil) target:self action:@selector(info_action:)];
+    QBPopupMenuItem *item_copy = [QBPopupMenuItem itemWithTitle[ChatLocal translate:@"copy"]target:self action:@selector(copy_action:)];
+    QBPopupMenuItem *item_info = [QBPopupMenuItem itemWithTitle:[ChatLocal translate:@"info"] target:self action:@selector(info_action:)];
 //    QBPopupMenuItem *item_delete = [QBPopupMenuItem itemWithTitle:@"Copia" target:self action:@selector(delete_action:)];
     
     //    QBPopupMenuItem *item5 = [QBPopupMenuItem itemWithImage:[UIImage imageNamed:@"clip"] target:self action:@selector(action)];

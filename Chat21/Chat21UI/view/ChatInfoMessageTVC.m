@@ -9,6 +9,7 @@
 #import "ChatInfoMessageTVC.h"
 #import "ChatMessage.h"
 #import "ChatInfoMessageAttributesTVC.h"
+#import "ChatLocal.h"
 
 @interface ChatInfoMessageTVC ()
 
@@ -37,25 +38,25 @@
     self.status.text = [@(self.message.status) stringValue];
     
     if (self.message.status == MSG_STATUS_FAILED) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Failed", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Failed"] ];
     }
     else if (self.message.status == MSG_STATUS_SENDING) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Sending", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Sending"] ];
     }
     else if (self.message.status == MSG_STATUS_QUEUED) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Queued", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Queued"] ];
     }
     else if (self.message.status == MSG_STATUS_SENT) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Sent", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Sent"] ];
     }
     else if (self.message.status == MSG_STATUS_RECEIVED) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Server received", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Server received"] ];
     }
     else if (self.message.status == MSG_STATUS_RETURN_RECEIPT) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Recipient received", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Recipient received"] ];
     }
     else if (self.message.status == MSG_STATUS_SEEN) {
-        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, NSLocalizedString(@"Recipient seen", nil) ];
+        self.status.text = [[NSString alloc] initWithFormat:@"(%d) %@", self.message.status, [ChatLocal translate:@"Recipient seen"] ];
     }
     
     self.senderFullname.text = self.message.senderFullname;

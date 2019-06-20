@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9EE718A97A1FFFE0AAC0929B /* libPods-Chat21.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78E3D19D4A574FA3EB792F22 /* libPods-Chat21.a */; };
 		B275A8D522BB6ACE00E2D388 /* Chat21.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B275A8CB22BB6ACE00E2D388 /* Chat21.framework */; };
 		B275A8DA22BB6ACE00E2D388 /* Chat21Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A8D922BB6ACE00E2D388 /* Chat21Tests.m */; };
 		B275A8DC22BB6ACE00E2D388 /* Chat21.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A8CE22BB6ACE00E2D388 /* Chat21.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -208,6 +207,7 @@
 		B275AA7E22BB734200E2D388 /* ChatConversationsVC.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A9B922BB734200E2D388 /* ChatConversationsVC.h */; };
 		B275AA7F22BB734200E2D388 /* ChatUIManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A9BA22BB734200E2D388 /* ChatUIManager.h */; };
 		B275AA8022BB734200E2D388 /* chat21-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A9BB22BB734200E2D388 /* chat21-Bridging-Header.h */; };
+		B2FFDEFDAE86AC2B1E7E67D8 /* Pods_Chat21.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C73E095919801AAEC4DD84A8 /* Pods_Chat21.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,7 +221,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		78E3D19D4A574FA3EB792F22 /* libPods-Chat21.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Chat21.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9838958A5A4A78A64561E6FF /* Pods-Chat21.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Chat21.release.xcconfig"; path = "Target Support Files/Pods-Chat21/Pods-Chat21.release.xcconfig"; sourceTree = "<group>"; };
 		B275A8CB22BB6ACE00E2D388 /* Chat21.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Chat21.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B275A8CE22BB6ACE00E2D388 /* Chat21.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Chat21.h; sourceTree = "<group>"; };
@@ -428,6 +427,7 @@
 		B275A9B922BB734200E2D388 /* ChatConversationsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationsVC.h; sourceTree = "<group>"; };
 		B275A9BA22BB734200E2D388 /* ChatUIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatUIManager.h; sourceTree = "<group>"; };
 		B275A9BB22BB734200E2D388 /* chat21-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "chat21-Bridging-Header.h"; sourceTree = "<group>"; };
+		C73E095919801AAEC4DD84A8 /* Pods_Chat21.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chat21.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD1AC512AE23C90C947C3F26 /* Pods-Chat21.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Chat21.debug.xcconfig"; path = "Target Support Files/Pods-Chat21/Pods-Chat21.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -436,7 +436,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EE718A97A1FFFE0AAC0929B /* libPods-Chat21.a in Frameworks */,
+				B2FFDEFDAE86AC2B1E7E67D8 /* Pods_Chat21.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,7 +454,7 @@
 		1FF52A25EAE50A82263B3AF9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				78E3D19D4A574FA3EB792F22 /* libPods-Chat21.a */,
+				C73E095919801AAEC4DD84A8 /* Pods_Chat21.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -511,7 +511,7 @@
 		B275A8E522BB734200E2D388 /* Chat21Core */ = {
 			isa = PBXGroup;
 			children = (
-				B275A8E622BB734200E2D388 /* Chat.strings */,
+				B275AA8122BBD0EA00E2D388 /* Resources */,
 				B275A8E822BB734200E2D388 /* Chat-Services.plist */,
 				B275A8E922BB734200E2D388 /* util */,
 				B275A8F922BB734200E2D388 /* ChatManager.h */,
@@ -823,6 +823,14 @@
 			path = view;
 			sourceTree = "<group>";
 		};
+		B275AA8122BBD0EA00E2D388 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B275A8E622BB734200E2D388 /* Chat.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -925,7 +933,6 @@
 				B275A8C722BB6ACE00E2D388 /* Sources */,
 				B275A8C822BB6ACE00E2D388 /* Frameworks */,
 				B275A8C922BB6ACE00E2D388 /* Resources */,
-				9DC7CFD78E9F647784AA7371 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1073,23 +1080,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9DC7CFD78E9F647784AA7371 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Chat21/Pods-Chat21-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Chat21/Pods-Chat21-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Chat21/Pods-Chat21-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

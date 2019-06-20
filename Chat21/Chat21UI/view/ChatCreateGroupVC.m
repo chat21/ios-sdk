@@ -50,44 +50,13 @@
     self.groupImageView.image = nil;
 }
 
-//-(void)photoMenu {
-//    // init the photo action menu
-//    NSString *takePhotoButtonTitle = [ChatLocal translate:@"TakePhotoLKey"];
-//    NSString *chooseExistingButtonTitle = NSLocalizedString(@"PhotoFromGalleryLKey", nil);
-//
-//    self.photoMenuSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:takePhotoButtonTitle, chooseExistingButtonTitle, nil];
-//    self.photoMenuSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-//}
-//
-//-(void)photoMenuWithRemoveButton {
-//    // init the photo action menu
-//    NSString *removePhotoButtonTitle = NSLocalizedString(@"RemovePhotoLKey", nil);
-//    NSString *takePhotoButtonTitle = NSLocalizedString(@"TakePhotoLKey", nil);
-//    NSString *chooseExistingButtonTitle = NSLocalizedString(@"PhotoFromGalleryLKey", nil);
-//
-//    self.photoMenuSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:removePhotoButtonTitle, takePhotoButtonTitle, chooseExistingButtonTitle, nil];
-//    self.photoMenuSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-//}
-//
-//- (void)tapImage:(UITapGestureRecognizer *)gesture {
-////    UIImageView* imageView = (UIImageView*)gesture.view;
-//    NSLog(@"tapped");
-//    [self.view endEditing:YES];
-//    if (self.groupImageView.image) {
-//        [self photoMenuWithRemoveButton];
-//    } else {
-//        [self photoMenu];
-//    }
-//    [self.photoMenuSheet showInView:self.parentViewController.tabBarController.view];
-//}
-
 -(void)tapProfilePhoto:(UITapGestureRecognizer *)gestureRecognizer {
     UIAlertController * alert =   [UIAlertController
                                    alertControllerWithTitle:nil
-                                   message:NSLocalizedString(@"Change Profile Photo", nil)
+                                   message:[ChatLocal translate:@"Change Profile Photo"]
                                    preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction* delete = [UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"Remove Photo", nil)
+                             actionWithTitle:[ChatLocal translate:@"Remove Photo"]
                              style:UIAlertActionStyleDestructive
                              handler:^(UIAlertAction * action)
                              {
@@ -95,23 +64,21 @@
                              }];
     
     UIAlertAction* photo = [UIAlertAction
-                            actionWithTitle:NSLocalizedString(@"Photo", nil)
+                            actionWithTitle:[ChatLocal translate:@"Photo"]
                             style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction * action)
                             {
-                                NSLog(@"Open photo");
                                 [self takePhoto];
                             }];
     UIAlertAction* photo_from_library = [UIAlertAction
-                                         actionWithTitle:NSLocalizedString(@"Photo from library", nil)
+                                         actionWithTitle:[ChatLocal translate:@"Photo from library"]
                                          style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction * action)
                                          {
-                                             NSLog(@"Open photo");
                                              [self chooseExisting];
                                          }];
     UIAlertAction* cancel = [UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"Cancel", nil)
+                             actionWithTitle:[ChatLocal translate:@"Cancel"]
                              style:UIAlertActionStyleCancel
                              handler:^(UIAlertAction * action)
                              {

@@ -27,6 +27,10 @@ s.dependency 'Firebase/Messaging'
 s.dependency 'Firebase/Storage'
 
 s.source_files  = "Chat21/**/*.{h,m}"
+s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets,plist}"
+s.resource_bundle = { 'Resources' => 'Chat21/Chat21Core/Resources/*.{lproj}/*.strings' }
+
+# s.resource_bundle = { "my_bundle_name" => ["my_component_directory/*.lproj/*.strings"] }
 
 s.public_header_files = 'Chat21/**/*.h'
 

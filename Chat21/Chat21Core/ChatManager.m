@@ -777,17 +777,22 @@ static NSString *PROFILE_THUMB_PHOTO_NAME = @"thumb_photo.jpg";
 }
 
 +(NSString *)profileBaseURL:(NSString *)profileId {
-    NSLog(@"Someone called me.");
+    NSLog(@"Here can crash due to missing resource bundles......");
     // RETURNS:
     // https://firebasestorage.googleapis.com/v0/b/chat-v2-dev.appspot.com/o/profiles/PROFILE-ID
     NSDictionary *google_info_dict = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"]];
-//    NSDictionary *chat_info_dict = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Chat-Info" ofType:@"plist"]];
+    if (google_info_dict == nil) {
+        NSLog(@"GoogleService-Info.plist is missig");
+    }
     NSString *bucket = [google_info_dict objectForKey:@"STORAGE_BUCKET"];
-//    NSString *profile_image_base_url = [chat_info_dict objectForKey:@"profile-image-base-url"];
+    if (bucket == nil) {
+        NSLog(@"GoogleService-Info.plist [STORAGE_BUCKET] is missig");
+    }
     NSString *profile_image_base_url = [ChatManager getInstance].profileImageBaseURL;
+    NSLog(@"profile_image_base_url %@", profile_image_base_url);
     NSString *base_url = [[NSString alloc] initWithFormat:profile_image_base_url, bucket];
     NSString *profile_base_url = [[NSString alloc] initWithFormat:@"%@/profiles%%2F%@", base_url, profileId];
-//    NSLog(@"profile_base_url: %@", profile_base_url);
+    NSLog(@"profile_base_url: %@", profile_base_url);
     return profile_base_url;
 }
 

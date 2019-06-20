@@ -57,7 +57,6 @@
         // http://mobiledevelopertips.com/cocoa/date-formatters-examples-take-2.html
         [dateFormat setDateFormat:[ChatLocal translate:@"TimeToStringDateFormat"]];
         NSString *dateString = [[dateFormat stringFromDate:date] capitalizedString];
-        //        timeMessagePart = [NSString stringWithFormat:@"%@ %@",NSLocalizedString(@"theLKey", nil), dateString];
         timeMessagePart = dateString;
         unitMessagePart = @"";
     }

@@ -6,8 +6,8 @@
 //
 
 #import "ChatMiniBrowserVC.h"
-//#import "ChatRootNC.h"
 #import "ChatConversationsVC.h"
+#import "ChatLocal.h"
 
 @interface ChatMiniBrowserVC ()
 
@@ -122,7 +122,7 @@ static NSString * AFBase64EncodedStringFromString(NSString *string) {
     if ([theURLString isEqualToString:[webView.request.URL absoluteString]]) {
         [activityIndicator stopAnimating];
         self.navigationItem.rightBarButtonItem = refreshButtonItem;
-        UIAlertView *userAdviceAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NetworkErrorTitle", nil) message:NSLocalizedString(@"A network error occurred", nil) delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *userAdviceAlert = [[UIAlertView alloc] initWithTitle:[ChatLocal translate:@"NetworkErrorTitle"] message:[ChatLocal translate:@"A network error occurred"] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [userAdviceAlert show];
     }
 }
@@ -137,15 +137,10 @@ static NSString * AFBase64EncodedStringFromString(NSString *string) {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
     actionSheet.title = urlString;
     actionSheet.delegate = self;
-//    [actionSheet addButtonWithTitle:NSLocalizedString(@"Inoltra", nil)];
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"Copia URL", nil)];
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"Open in Safari", nil)];
+    [actionSheet addButtonWithTitle:[ChatLocal translate:@"Copy link"]];
+    [actionSheet addButtonWithTitle:[ChatLocal translate:@"Open link in Safari"]];
     
-//    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome://"]]) {
-//        // Chrome is installed, add the option to open in chrome.
-//        [actionSheet addButtonWithTitle:NSLocalizedString(@"Open in Chrome", nil)];
-//    }
-    actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+    actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:[ChatLocal translate:@"Cancel"]];
     actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
     [actionSheet showInView:self.view];
 }

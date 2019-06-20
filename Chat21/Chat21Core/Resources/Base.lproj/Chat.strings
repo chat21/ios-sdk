@@ -67,7 +67,7 @@
 "ChatHelpMenuOption" = "Help and support";
 "ChatLogoutMenuOption" = "Logout";
 "ChatLogoutChatOption" = "Chat";
-"Open link" = "Open in Safari";
+"Open link in Safari" = "Open in Safari";
 "Copy link" = "Copy";
 "Group administrator" = "administrator";
 "Select group" = "Select group";

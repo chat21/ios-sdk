@@ -56,16 +56,6 @@
                                message:fullname
                                preferredStyle:UIAlertControllerStyleActionSheet];
     
-//    UIAlertAction *info = [UIAlertAction
-//                           actionWithTitle:NSLocalizedString(@"Member info", nil)
-//                           style:UIAlertActionStyleDefault
-//                           handler:^(UIAlertAction * action)
-//                           {
-//                               NSLog(@"Go to profile");
-//                               [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-//                               [self goToProfileOf:memberId];
-//                           }];
-    
     UIAlertAction *cancel = [UIAlertAction
                              actionWithTitle:[ChatLocal translate:@"Cancel"]
                              style:UIAlertActionStyleDefault
@@ -86,20 +76,10 @@
                   }];
     }
     
-//    UIAlertAction* send_message = [UIAlertAction
-//                                   actionWithTitle:NSLocalizedString(@"Send message", nil)
-//                                   style:UIAlertActionStyleDefault
-//                                   handler:^(UIAlertAction * action)
-//                                   {
-//                                       NSLog(@"Send message");
-//                                   }];
-    
     
     if (remove) {
         [view addAction:remove];
     }
-//    [view addAction:info];
-//    [view addAction:send_message];
     [view addAction:cancel];
     
     [self presentViewController:view animated:YES completion:nil];
