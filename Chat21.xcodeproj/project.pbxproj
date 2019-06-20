@@ -607,13 +607,12 @@
 		B275A92622BB734200E2D388 /* Chat21UI */ = {
 			isa = PBXGroup;
 			children = (
-				B275A92C22BB734200E2D388 /* util */,
+				B275A9BB22BB734200E2D388 /* chat21-Bridging-Header.h */,
+				B275A9BA22BB734200E2D388 /* ChatUIManager.h */,
 				B275A96222BB734200E2D388 /* ChatUIManager.m */,
 				B275A96322BB734200E2D388 /* QBPopupMenu */,
-				B275A97322BB734200E2D388 /* Chat.storyboard */,
+				B275A92C22BB734200E2D388 /* util */,
 				B275A97422BB734200E2D388 /* view */,
-				B275A9BA22BB734200E2D388 /* ChatUIManager.h */,
-				B275A9BB22BB734200E2D388 /* chat21-Bridging-Header.h */,
 			);
 			path = Chat21UI;
 			sourceTree = "<group>";
@@ -823,6 +822,7 @@
 		B275AA8122BBD0EA00E2D388 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B275A97322BB734200E2D388 /* Chat.storyboard */,
 				B275A97022BB734200E2D388 /* sounds */,
 				B275A93B22BB734200E2D388 /* images */,
 				B275A92722BB734200E2D388 /* xib */,
