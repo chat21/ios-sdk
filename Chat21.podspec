@@ -29,8 +29,13 @@ s.dependency 'Firebase/Storage'
 s.source_files  = "Chat21/**/*.{h,m}"
 s.resources = "Chat21/**/*.{png,jpeg,jpg,storyboard,xib,xcassets}"
 # s.resource_bundle = { 'Resources' => 'Chat21/**/*.{lproj}/*.strings' }
+s.resource_bundles = {
+    'Chat' => [
+        'Chat21/**/*.{lproj}/*.strings'
+    ]
+  }
 
-s.resource_bundle = { "my_bundle_name" => ["Chat21/*.lproj/*.strings"] }
+# s.resource_bundle = { "my_bundle_name" => ["Chat21/*.lproj/*.strings"] }
 
 s.public_header_files = 'Chat21/**/*.h'
 
