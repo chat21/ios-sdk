@@ -11,18 +11,17 @@ Much more information can be found at [http://www.chat21.org](http://www.chat21.
 
 Chat21 is a *multiplatform chat SDK* developed using only Firebase as the backend.
 
-This demo shows the following features:
+Chat21 iOS SDK provides the following features:
 
-* Tab based chat application
+* Direct messages
+* Group messages
 * Recent conversations' list
-* Direct message (one to one message)
 * Offline messages' history
-* Received receipts (you can see if a message was sent and delivered)
+* Received receipts
 * Presence Manager with online/offline and inactivity period indicator
-* Integration of a custom user profile's view
-* Signup/Login with email and password
+* Signup/Login with email and password / other
 * Synchronized contacts (with offline search and selection)
-* Integrates an example of a mobile live-chat support (an "help" button on the top left corner of every tab)
+* Extension points
 
 ## Install Chat21 SDK using CocoaPods
 
