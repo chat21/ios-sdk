@@ -15,8 +15,6 @@ guide](https://guides.cocoapods.org/using/getting-started.html#getting-started).
 $ sudo gem install cocoapods
 ```
 
-```
-
 Note that Chat21 SDK require a Firebase Project to work. More information about the creation of a Firebase project is available at [https://firebase.google.com/docs/](https://firebase.google.com/docs/).
 
 ## Add Chat21 SDK to your iOS app
