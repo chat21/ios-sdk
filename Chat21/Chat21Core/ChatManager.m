@@ -777,7 +777,7 @@ static NSString *PROFILE_THUMB_PHOTO_NAME = @"thumb_photo.jpg";
 }
 
 +(NSString *)profileBaseURL:(NSString *)profileId {
-    NSLog(@"Here can crash due to missing resource bundles......");
+    NSLog(@"ChatManager.profileBaseURL: here can crash if you miss some basic resource bundle.");
     // RETURNS:
     // https://firebasestorage.googleapis.com/v0/b/chat-v2-dev.appspot.com/o/profiles/PROFILE-ID
     NSDictionary *google_info_dict = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"]];
