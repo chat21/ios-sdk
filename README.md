@@ -46,8 +46,12 @@ CocoaPods is used to install and manage dependencies in existing Xcode projects.
 3.  Open `Podfile`, and add your dependencies. A simple Podspec is shown here:
 
     ```
-    platform :ios, '8.0'
-    pod 'Chat21'
+platform :ios, '10.0'
+use_frameworks!
+
+target 'YOUR-TARGET-NAME' do
+  pod 'Chat21'
+end
     ```
 
 4.  Save the file.
