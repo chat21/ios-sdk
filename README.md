@@ -1,15 +1,16 @@
-# Chat21 APIs for iOS
+# Chat21 SDK
 
-Simplify adding Instant Messaging features to your app with Chat21 SDK.
+Chat21 SDK adds Instant Messaging features to your app.
 
 ## Features
 
-Much more information can be found at [http://www.chat21.org](http://www.chat21.org).
+Chat21 is a multi platform SDK that adds Instant Messaging to your iOS, Android and Web applications. 
+You can find more information on [http://www.chat21.org](http://www.chat21.org).
 
 <img src="https://user-images.githubusercontent.com/32564846/34433123-4873eca4-ec7d-11e7-8a80-4ad54def8653.png" width="250">  <img src="https://user-images.githubusercontent.com/32564846/34433130-5a797022-ec7d-11e7-94c0-cd91cb7a7e3b.png" width="250"> <img src="https://user-images.githubusercontent.com/32564846/34433695-39e04468-ec81-11e7-84a3-920e9098a2a1.png" width="250">
 
 
-Chat21 is a *multiplatform chat SDK* developed using only Firebase as the backend.
+Chat21's backend actually relies on Firebase. Please refer to the [Get Started for iOS](https://docs.chat21.org/ios/get-started) tutorial to correctly address the setup of a Firebase account and APIs integration.
 
 Chat21 iOS SDK provides the following features:
 
@@ -19,7 +20,7 @@ Chat21 iOS SDK provides the following features:
 * Offline messages' history
 * Received receipts
 * Presence Manager with online/offline and inactivity period indicator
-* Signup/Login with email and password / other
+* Signup/Login with email and password and other auth methods
 * Synchronized contacts (with offline search and selection)
 * Extension points
 
