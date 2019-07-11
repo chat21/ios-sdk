@@ -170,7 +170,20 @@ static NotificationAlertView *notificationAlertInstance = nil;
     if (!notificationAlertInstance) {
         NSArray *subviewArray = [[NSBundle mainBundle] loadNibNamed:@"notification_view" owner:self options:nil];
         NotificationAlertView *view = [subviewArray objectAtIndex:0];
-        [view initViewWithHeight:60];
+        int min_height = 66;
+        bool hasNotch = false;
+        if (@available(iOS 11.0, *)) {
+            NSLog(@"Bottom: %f", [UIApplication sharedApplication].keyWindow.safeAreaInsets.bottom);
+            if ([UIApplication sharedApplication].keyWindow.safeAreaInsets.bottom > 0) {
+                hasNotch = true;
+            }
+            else {
+                hasNotch = false;
+            }
+        }
+        NSLog(@"hasNotch? %d", hasNotch);
+        int height = hasNotch ? min_height + 34 : min_height;
+        [view initViewWithHeight:height];
         notificationAlertInstance = view;
     }
     return notificationAlertInstance;

@@ -21,7 +21,6 @@
 //#import "QBPopupMenuItem.h"
 #import "ChatTitleVC.h"
 #import "ChatImageCache.h"
-#import "ChatImageWrapper.h"
 #import "ChatMessagesTVC.h"
 #import "ChatGroup.h"
 #import "ChatStatusTitle.h"

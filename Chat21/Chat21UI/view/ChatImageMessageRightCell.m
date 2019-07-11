@@ -12,7 +12,6 @@
 #import "ChatLocal.h"
 #import "ChatMessageMetadata.h"
 #import "ChatImageCache.h"
-#import "ChatImageWrapper.h"
 #import "ChatImageUtil.h"
 
 @implementation ChatImageMessageRightCell

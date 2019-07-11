@@ -8,7 +8,6 @@
 #import "ChatSelectGroupLocalTVC.h"
 //#import "ChatModalCallerDelegate.h"
 #import "ChatImageCache.h"
-#import "ChatImageWrapper.h"
 #import "ChatGroup.h"
 #import "ChatManager.h"
 #import "ChatUser.h"

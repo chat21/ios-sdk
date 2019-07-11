@@ -59,7 +59,7 @@ static ChatContactsDB *sharedInstance = nil;
     
     // **** TESTING ONLY ****
     // if you add another table or change an existing one you must (for the moment) drop the DB
-    //    [self drop_database];
+//    [self drop_database];
     const char *dbpath = [databasePath UTF8String];
     
     if ([filemgr fileExistsAtPath: databasePath ] == NO) {
@@ -71,19 +71,15 @@ static ChatContactsDB *sharedInstance = nil;
             char *errMsg;
             if (self.logQuery) {NSLog(@"**** CREATING TABLE CONTACTS...");}
             const char *sql_stmt_contacts =
-            "create table if not exists contacts (contactId text primary key, firstname text, lastname text, fullname text, email text, imageurl text, createdon real)";
+            "create table if not exists contacts (contactId text primary key, firstname text, lastname text, fullname text, email text, imageurl text, createdon integer)";
             if (sqlite3_exec(database, sql_stmt_contacts, NULL, NULL, &errMsg) != SQLITE_OK) {
                 isSuccess = NO;
                 NSLog(@"Failed to create table contacts. ERROR: %s", errMsg);
             }
             else {
                 NSLog(@"Table contacts successfully created.");
+                [self upgradeSchema:dbpath];
             }
-            
-            //            NSString *updateSQL = [NSString stringWithFormat:@"UPDATE contacts SET firstname = ?, lastname = ?, fullname = ?, email = ?, imageurl = ?, createdon = ? WHERE contactId = ?"];
-            //            sqlite3_prepare(database, [updateSQL UTF8String], -1, &statement_insert, NULL);
-            
-            //            sqlite3_close(database);
             return  isSuccess;
         }
         else {
@@ -93,6 +89,7 @@ static ChatContactsDB *sharedInstance = nil;
     } else {
         NSLog(@"Database %@ already exists. Opening.", databasePath);
         if (sqlite3_open(dbpath, &database) == SQLITE_OK) {
+            [self upgradeSchema:dbpath];
             return  isSuccess;
         }
         else {
@@ -101,6 +98,34 @@ static ChatContactsDB *sharedInstance = nil;
         }
     }
     return isSuccess;
+}
+
+-(void)upgradeSchema:(const char *)dbpath {
+    // version schema
+    // or test if the column exists
+    // https://stackoverflow.com/questions/3604310/alter-table-add-column-if-not-exists-in-sqlite
+    if (self.logQuery) {NSLog(@"Upgrading schema");}
+    int result;
+    result = sqlite3_open_v2(dbpath, &database, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
+    if (result == SQLITE_OK) {
+        if (self.logQuery) {NSLog(@"**** UPGRADING TABLE contacts...");}
+        
+        if (self.logQuery) {NSLog(@"alter table contacts add column imagechangedat integer");}
+        char *errMsg;
+        const char *sql_stmt_alter =
+        "alter table contacts add column imagechangedat integer";
+        if (sqlite3_exec(database, sql_stmt_alter, NULL, NULL, &errMsg) != SQLITE_OK) {
+            if (self.logQuery) {NSLog(@"Failed to alter table contacts (adding column 'imagechangedat integer')");}
+        }
+        else {
+            if (self.logQuery) {NSLog(@"Table contacts successfully altered (added 'imagechangedat integer').");}
+        }
+        
+        sqlite3_close(database);
+    }
+    else {
+        if (self.logQuery) {NSLog(@"Failed to alter table messages.");}
+    }
 }
 
 // only for test
@@ -140,10 +165,8 @@ static ChatContactsDB *sharedInstance = nil;
 }
 
 -(BOOL)insertContact:(ChatUser *)contact {
-    //    const char *dbpath = [databasePath UTF8String];
-    //    if (sqlite3_open(dbpath, &database) == SQLITE_OK) {
     NSLog(@"Insert contact %@", contact.fullname);
-    NSString *insertSQL = [NSString stringWithFormat:@"insert into contacts (contactId, firstname, lastname, fullname, email, imageurl, createdon) values (?, ?, ?, ?, ?, ?, ?)"];
+    NSString *insertSQL = [NSString stringWithFormat:@"insert into contacts (contactId, firstname, lastname, fullname, email, imagechangedat, createdon) values (?, ?, ?, ?, ?, ?, ?)"];
     
     sqlite3_prepare(database, [insertSQL UTF8String], -1, &statement_insert, NULL);
     
@@ -152,8 +175,8 @@ static ChatContactsDB *sharedInstance = nil;
     sqlite3_bind_text(statement_insert, 3, [contact.lastname UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(statement_insert, 4, [contact.fullname UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(statement_insert, 5, [contact.email UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(statement_insert, 6, [contact.imageurl UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(statement_insert, 7, (int)contact.createdon);
+    sqlite3_bind_int64(statement_insert, 6, (long)contact.imageChangedAt);
+    sqlite3_bind_int64(statement_insert, 7, (long)contact.createdon);
     
     if (sqlite3_step(statement_insert) == SQLITE_DONE) {
         sqlite3_finalize(statement_insert);
@@ -171,12 +194,8 @@ static ChatContactsDB *sharedInstance = nil;
 }
 
 -(BOOL)updateContact:(ChatUser *)contact {
-    //    NSLog(@"**** updating group %@", group.groupId);
-    //    const char *dbpath = [databasePath UTF8String];
-    //    if (sqlite3_open(dbpath, &database) == SQLITE_OK) {
     NSLog(@"Update contact %@", contact.fullname);
-    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE contacts SET firstname = ?, lastname = ?, fullname = ?, email = ?, imageurl = ?, createdon = ? WHERE contactId = ?"];
-    //        NSLog(@"QUERY:%@", updateSQL);
+    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE contacts SET firstname = ?, lastname = ?, fullname = ?, email = ?, imagechangedat = ?, createdon = ? WHERE contactId = ?"];
     
     sqlite3_prepare(database, [updateSQL UTF8String], -1, &statement, NULL);
     
@@ -184,8 +203,8 @@ static ChatContactsDB *sharedInstance = nil;
     sqlite3_bind_text(statement, 2, [contact.lastname UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(statement, 3, [contact.fullname UTF8String], -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(statement, 4, [contact.email UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(statement, 5, [contact.imageurl UTF8String], -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(statement, 6, (int)contact.createdon);
+    sqlite3_bind_int64(statement, 5, (long)contact.imageChangedAt);
+    sqlite3_bind_int64(statement, 6, (long)contact.createdon);
     sqlite3_bind_text(statement, 7, [contact.userId UTF8String], -1, SQLITE_TRANSIENT);
     
     if (sqlite3_step(statement) == SQLITE_DONE) {
@@ -204,7 +223,34 @@ static ChatContactsDB *sharedInstance = nil;
     return NO;
 }
 
-static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname, lastname, fullname, email, imageurl, createdon FROM contacts ";
+//-(BOOL)updateContact:(NSString *)contactId imageChangedAt:(double)imagechangedat {
+//    NSLog(@"Updating imagechangedat contact %@", contactId);
+//    NSString *updateSQL = [NSString stringWithFormat:@"UPDATE contacts SET imagechangedat = ?, createdon = ? WHERE contactId = ?"];
+//    //        NSLog(@"QUERY:%@", updateSQL);
+//
+//    sqlite3_prepare(database, [updateSQL UTF8String], -1, &statement, NULL);
+//
+//    sqlite3_bind_int(statement, 1, (int)imagechangedat);
+//    sqlite3_bind_int(statement, 2, (int)imagechangedat);
+//    sqlite3_bind_text(statement, 3, [contactId UTF8String], -1, SQLITE_TRANSIENT);
+//
+//    if (sqlite3_step(statement) == SQLITE_DONE) {
+//        //            sqlite3_finalize(statement);
+//        sqlite3_reset(statement);
+//        NSLog(@"Contact successfully updated.");
+//        return YES;
+//    }
+//    else {
+//        NSLog(@"Error while updating contact.");
+//        NSLog(@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database));
+//        sqlite3_reset(statement);
+//        return NO;
+//    }
+//    //    }
+//    return NO;
+//}
+
+static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname, lastname, fullname, email, imagechangedat, createdon FROM contacts ";
 
 -(NSArray*)getAllContacts {
     NSMutableArray *contacts = [[NSMutableArray alloc] init];
@@ -224,6 +270,13 @@ static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname,
     }
     //    }
     return contacts;
+}
+
+-(void)getMostRecentContactSyncronizedWithCompletion:(void(^)(ChatUser *contact)) callback {
+    dispatch_async(serialDatabaseQueue, ^{
+        ChatUser *contact = [self getMostRecentContact];
+        callback(contact);
+    });
 }
 
 -(ChatUser *)getMostRecentContact {
@@ -326,15 +379,15 @@ static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname,
         NSString *querySQL = [NSString stringWithFormat:
                               @"%@ WHERE fullname LIKE \"%%%@%%\" ORDER BY fullname",SELECT_FROM_CONTACTS_STATEMENT, searchString]; //  LIMIT 50
         const char *query_stmt = [querySQL UTF8String];
-        if (sqlite3_prepare_v2(database, query_stmt, -1, &statement, NULL) == SQLITE_OK) {
-            while (sqlite3_step(statement) == SQLITE_ROW) {
-                ChatUser *contact = [self contactFromStatement:statement];
+        if (sqlite3_prepare_v2(self->database, query_stmt, -1, &self->statement, NULL) == SQLITE_OK) {
+            while (sqlite3_step(self->statement) == SQLITE_ROW) {
+                ChatUser *contact = [self contactFromStatement:self->statement];
                 [contacts addObject:contact];
             }
-            sqlite3_reset(statement);
+            sqlite3_reset(self->statement);
         } else {
             NSLog(@"**** PROBLEMS WHILE SEARCHING CONTACTS...");
-            NSLog(@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database));
+            NSLog(@"Database returned error %d: %s", sqlite3_errcode(self->database), sqlite3_errmsg(database));
         }
         //        }
         if (callback != nil) {
@@ -375,13 +428,13 @@ static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname,
         NSString *sql = [NSString stringWithFormat:@"DELETE FROM contacts WHERE contactId = \"%@\"", contactId];
         //        NSLog(@"**** QUERY:%@", sql);
         const char *stmt = [sql UTF8String];
-        sqlite3_prepare_v2(database, stmt,-1, &statement, NULL);
-        if (sqlite3_step(statement) == SQLITE_DONE) {
-            sqlite3_reset(statement);
+        sqlite3_prepare_v2(self->database, stmt,-1, &self->statement, NULL);
+        if (sqlite3_step(self->statement) == SQLITE_DONE) {
+            sqlite3_reset(self->statement);
         }
         else {
-            NSLog(@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database));
-            sqlite3_reset(statement);
+            NSLog(@"Database returned error %d: %s", sqlite3_errcode(self->database), sqlite3_errmsg(self->database));
+            sqlite3_reset(self->statement);
         }
         if (callback != nil) {
             callback();
@@ -429,14 +482,15 @@ static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname,
         email = [[NSString alloc] initWithUTF8String:_email];
     }
     
-    const char* _imageurl = (const char *) sqlite3_column_text(statement, 5);
-    //    NSLog(@">>>>>>>>>>> owner = %s", _owner);
-    NSString *imageurl = nil;
-    if (_imageurl) {
-        imageurl = [[NSString alloc] initWithUTF8String:_fullname];
-    }
+//    const char* _imageurl = (const char *) sqlite3_column_text(statement, 5);
+//    NSString *imageurl = nil;
+//    if (_imageurl) {
+//        imageurl = [[NSString alloc] initWithUTF8String:_fullname];
+//    }
     
-    const int createdon = (const int) sqlite3_column_int(statement, 6);
+    const long imagechangedat = (const long) sqlite3_column_int64(statement, 5);
+    
+    const long createdon = (const long) sqlite3_column_int64(statement, 6);
     
     ChatUser *contact = [[ChatUser alloc] init];
     contact.userId = contactId;
@@ -444,7 +498,7 @@ static NSString *SELECT_FROM_CONTACTS_STATEMENT = @"SELECT contactId, firstname,
     contact.lastname = lastname;
     contact.fullname = fullname;
     contact.email = email;
-    contact.imageurl = imageurl;
+    contact.imageChangedAt = imagechangedat;
     contact.createdon = createdon;
     return contact;
 }

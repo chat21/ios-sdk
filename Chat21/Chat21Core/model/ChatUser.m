@@ -13,7 +13,7 @@
 
 -(id)init {
     if (self = [super init])  {
-        self.imageurl = @"";
+//        self.imageurl = @"";
         self.lastname = @"";
         self.firstname = @"";
         self.userId = nil;
@@ -23,7 +23,7 @@
 
 -(id)init:(NSString *)userid fullname:(NSString *)fullname {
     if (self = [super init])  {
-        self.imageurl = @"";
+//        self.imageurl = @"";
         self.lastname = @"";
         self.firstname = @"";
         _fullname = fullname;
@@ -59,9 +59,9 @@
     if (self.email) {
         [dict setObject:self.email forKey:FIREBASE_USER_EMAIL];
     }
-    if (self.imageurl) {
-        [dict setObject:self.imageurl forKey:FIREBASE_USER_IMAGEURL];
-    }
+//    if (self.imageurl) {
+//        [dict setObject:self.imageurl forKey:FIREBASE_USER_IMAGEURL];
+//    }
     
     return dict;
 }

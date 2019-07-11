@@ -33,7 +33,6 @@ s.dependency 'Firebase/Storage'
 
 s.source_files  = "Chat21/**/*.{h,m}"
 
-# MOVES FILES IN RESOURCES FOLDER - IN POD'S ROOT FOLDER
 s.resources = "Resources/**/*.{png,jpeg,jpg,storyboard,xib,xcassets,caf,plist,lproj}"
 
 s.public_header_files = 'Chat21/**/*.h'

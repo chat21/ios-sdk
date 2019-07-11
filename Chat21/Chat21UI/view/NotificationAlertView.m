@@ -41,7 +41,9 @@
     self.myWindow = notificationAlertWindow;
     [notificationAlertWindow addSubview:self];
     notificationAlertWindow.windowLevel = UIWindowLevelStatusBar + 1;
-    
+    // setup circle image view
+    self.userImage.layer.cornerRadius = self.userImage.frame.size.width / 2;
+    self.userImage.clipsToBounds = YES;
 //    self.mainWindow = [[[UIApplication sharedApplication] delegate] window];
     // adjusting close button position on the right side of the view
 //    self.closeButton.translatesAutoresizingMaskIntoConstraints = YES;
@@ -58,7 +60,7 @@
     //    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
     NSLog(@"View tapped!! Moving to conversation tab.");
     [self animateClose];
-    int chat_tab_index = [ChatUIManager getInstance].tabBarIndex; // tabIndexByName:@"ChatController"];
+//    int chat_tab_index = [ChatUIManager getInstance].tabBarIndex; // tabIndexByName:@"ChatController"];
     // move to the converstations tab
 //    if (chat_tab_index >= 0) {
 //        UIWindow *window = [[[UIApplication sharedApplication] delegate] window];

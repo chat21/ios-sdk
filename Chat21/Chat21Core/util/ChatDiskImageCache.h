@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+static int SMALL_PROFILE_IMAGE_SIZE = 240;
+
 @interface ChatDiskImageCache : NSObject
 
 @property (nonatomic, strong) NSMutableDictionary *memoryObjects;
@@ -27,13 +29,15 @@
 -(void)removeCachedImage:(NSString *)key sized:(long)size;
 -(void)deleteFilesFromCacheStartingWith:(NSString *)partial_key;
 -(void)deleteFilesFromDiskCacheOfProfile:(NSString *)profileId;
--(NSString *)urlAsKey:(NSURL *)url;
++(NSString *)urlAsKey:(NSURL *)url;
 -(void)updateProfile:(NSString *)profileId image:(UIImage *)image;
+-(void)removeCachedImagesOfProfile:(NSString *)profileId;
+- (void)createThumbsInCacheForProfileId:(NSString *)profileId originalImage:(UIImage *)originalImage;
+-(UIImage *)smallCachedProfileImageFor:(NSString *)profileId;
 
 +(NSString *)sizedKey:(NSString *)key size:(long) size;
 //+(void)saveImageAsJPEG:(UIImage *)image withName:(NSString*)name inFolder:(NSString *)folderName;
 +(UIImage *)loadImage:(NSString *)name inFolder:(NSString *)folderName;
 +(ChatDiskImageCache *)getSharedInstance;
-
 
 @end

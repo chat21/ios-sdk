@@ -10,7 +10,8 @@
 static NSString* const FIREBASE_USER_ID = @"uid";
 static NSString* const FIREBASE_USER_FIRSTNAME = @"firstname";
 static NSString* const FIREBASE_USER_LASTNAME = @"lastname";
-static NSString* const FIREBASE_USER_IMAGEURL = @"imageurl";
+//static NSString* const FIREBASE_USER_IMAGEURL = @"imageurl"; // DEPRECATED
+static NSString* const FIREBASE_USER_IMAGE_CHANGED_AT = @"imagechangedat";
 static NSString* const FIREBASE_USER_TIMESTAMP = @"timestamp";
 static NSString* const FIREBASE_USER_EMAIL = @"email";
 
@@ -20,7 +21,8 @@ static NSString* const FIREBASE_USER_EMAIL = @"email";
 @property(nonatomic, strong) NSString *firstname;
 @property(nonatomic, strong) NSString *lastname;
 @property(nonatomic, strong) NSString *fullname;
-@property(nonatomic, strong) NSString *imageurl;
+//@property(nonatomic, strong) NSString *imageurl; // DEPRECATED
+@property(nonatomic, assign) NSInteger imageChangedAt;
 @property(nonatomic, strong) NSString *email;
 //@property(nonatomic, strong) NSString *password;
 @property(nonatomic, assign) NSInteger createdon;

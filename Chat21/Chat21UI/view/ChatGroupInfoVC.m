@@ -14,7 +14,6 @@
 #import "ChatUtil.h"
 #import "ChatUploadsController.h"
 #import "ChatDiskImageCache.h"
-//#import "ChatImageWrapper.h"
 #import "ChatChangeGroupNameVC.h"
 #import "ChatUser.h"
 #import "ChatLocal.h"
@@ -71,7 +70,7 @@
     // try to get image from cache
     NSString *imageURL = [ChatManager profileImageURLOf:profileId];
     NSURL *url = [NSURL URLWithString:imageURL];
-    NSString *cache_key = [self.imageCache urlAsKey:url];
+    NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
     UIImage *cachedProfileImage = [self.imageCache getCachedImage:cache_key];
     [self setupCurrentProfileViewWithImage:cachedProfileImage];
     [self.imageCache getImage:imageURL completionHandler:^(NSString *imageURL, UIImage *image) {

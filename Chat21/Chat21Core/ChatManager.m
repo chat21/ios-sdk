@@ -473,6 +473,39 @@ static ChatManager *sharedInstance = nil;
     }];
 }
 
+-(void)updateContactFor:(NSString *)userId ImageChagedWithCompletionBlock:(void (^)(NSError *))completionBlock {
+    FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
+    
+    FIRDatabaseReference *contactsRef;
+    @try {
+        contactsRef = [[rootRef child: [ChatUtil contactsPath]] child:userId];
+    }
+    @catch(NSException *exception) {
+        NSLog(@"Contact not updated. Error: %@", exception);
+        return;
+    }
+    
+    NSDictionary *contact_dict = [[NSMutableDictionary alloc] init];
+//    NSInteger now = [[NSDate alloc] init].timeIntervalSince1970 * 1000;
+    [contact_dict setValue:[FIRServerValue timestamp] forKey:@"timestamp"];
+    [contact_dict setValue:[FIRServerValue timestamp] forKey:FIREBASE_USER_IMAGE_CHANGED_AT];
+    NSLog(@"Updating contact on Firebase...");
+    [contactsRef updateChildValues:contact_dict withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+        NSLog(@"contact setValue callback. %@", contact_dict);
+        if (error) {
+            NSLog(@"Command: \"Update Contact %@ on Firebase\" failed with error: %@",userId, error);
+            if (completionBlock != nil) {
+                completionBlock(error);
+            }
+        } else {
+            NSLog(@"Command: \"Update Contact %@ on Firebase\" was successfull.",userId);
+            if (completionBlock != nil) {
+                completionBlock(nil);
+            }
+        }
+    }];
+}
+
 -(void)createGroup:(ChatGroup *)group withCompletionBlock:(void (^)(ChatGroup *group, NSError* error))callback {
     //    SHPUser *me = self.context.loggedUser;
     NSString *me = self.loggedUser.userId;
@@ -772,7 +805,7 @@ static NSString *PROFILE_THUMB_PHOTO_NAME = @"thumb_photo.jpg";
 +(NSString *)fileURLOfProfile:(NSString *)profileId fileName:(NSString *)fileName {
     NSString *profile_base_url = [ChatManager profileBaseURL:profileId];
     NSString *file_url = [[NSString alloc] initWithFormat:@"%@%%2F%@?alt=media", profile_base_url, fileName];
-//    NSLog(@"profile file url: %@", file_url);
+    NSLog(@"profile file url: %@", file_url);
     return file_url;
 }
 

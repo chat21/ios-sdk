@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "ChatPresenceHandler.h"
-//#import "ChatModalCallerDelegate.h"
 #import "ChatUser.h"
+#import "ChatSynchDelegate.h"
 
 @class ChatConversationsHandler;
 @class ChatGroupsHandler;
@@ -25,7 +25,7 @@
 static const int SECTION_GROUP_MENU_INDEX = 0;
 static const int SECTION_CONVERSATIONS_INDEX = 1;
 
-@interface ChatConversationsVC : UITableViewController <UIActionSheetDelegate>
+@interface ChatConversationsVC : UITableViewController <UIActionSheetDelegate, ChatSynchDelegate>
 - (IBAction)newGroupAction:(id)sender;
 - (IBAction)groupsAction:(id)sender;
 
@@ -46,7 +46,7 @@ static const int SECTION_CONVERSATIONS_INDEX = 1;
 @property (strong, nonatomic) NSDictionary *settings;
 @property (assign, nonatomic) BOOL isModal;
 @property (strong, nonatomic) CellConfigurator *cellConfigurator;
-@property (nonatomic, copy) void (^dismissModalCallback)();
+@property (nonatomic, copy) void (^dismissModalCallback)(void);
 
 // connection status
 @property (assign, nonatomic) FIRDatabaseHandle connectedRefHandle;

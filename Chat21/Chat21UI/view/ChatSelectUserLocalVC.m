@@ -7,7 +7,6 @@
 
 #import "ChatSelectUserLocalVC.h"
 #import "ChatImageCache.h"
-#import "ChatImageWrapper.h"
 #import "ChatGroup.h"
 #import "ChatDB.h"
 #import "ChatUser.h"
@@ -55,11 +54,27 @@
     [self.tableView reloadData];
 }
 
--(void)synchEnd {
+- (void)synchEnd {
     NSLog(@"SYNCH-END");
     [self setupSynchronizing];
     [self.tableView reloadData];
 }
+
+- (void)contactUpdated:(ChatUser *)oldContact newContact:(ChatUser *)newContact {
+    NSLog(@"Contact updated: %@", oldContact.userId);
+    NSLog(@"Old Contact fullname: %@", oldContact.userId);
+    NSLog(@"New Contact fullname: %@", newContact.userId);
+}
+
+- (void)contactAdded:(ChatUser *)contact {
+    NSLog(@"Contact added: %@", contact.fullname);
+}
+
+- (void)contactRemoved:(ChatUser *)contact {
+    NSLog(@"Contact removed: %@", contact.fullname);
+}
+
+// #- END SYNCH PROTOCOL
 
 -(void)setupSynchronizing {
     self.synchronizing = contacts.synchronizing;
@@ -251,15 +266,7 @@ static NSString* const chatAllUsers = @"chatAllUsers";
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self.view endEditing:YES];
-    //    NSLog(@"Will begin dragging");
 }
-
-//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-//{
-//    NSLog(@"Did Scroll");
-//}
-
-// end
 
 -(void)dealloc {
     NSLog(@"SEARCH USERS VIEW DEALLOCATING...");

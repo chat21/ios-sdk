@@ -61,7 +61,7 @@ static ChatDiskImageCache *sharedInstance = nil;
 -(void)deleteFilesFromDiskCacheOfProfile:(NSString *)profileId {
     NSString *baseURL = [ChatManager profileBaseURL:profileId];
     NSURL *url = [NSURL URLWithString:baseURL];
-    NSString *cache_key = [self urlAsKey:url];
+    NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
     [self deleteFilesFromCacheStartingWith:cache_key];
 }
 
@@ -105,7 +105,7 @@ static ChatDiskImageCache *sharedInstance = nil;
 -(UIImage *)getCachedImage:(NSString *)key sized:(long)size circle:(BOOL)circle {
     NSString *sized_key = key;
     if (size != 0) {
-        sized_key =[ChatDiskImageCache sizedKey:key size:size];  //[NSString stringWithFormat:@"%@_sized_%ld", key, size];
+        sized_key =[ChatDiskImageCache sizedKey:key size:size];
     }
     // hit memory first
     UIImage *image = (UIImage *)[self.memoryObjects objectForKey:sized_key];
@@ -116,8 +116,8 @@ static ChatDiskImageCache *sharedInstance = nil;
             // get the original one
             UIImage *original_image = [ChatDiskImageCache loadImage:key inFolder:self.cacheFolder];
             if (original_image) {
-                // we have the original.
-                // resize...
+                // we have the original image.
+                // resizing...
                 UIImage *resized_image = [ChatImageUtil scaleImage:original_image toSize:CGSizeMake(size, size)];
                 if (circle) {
                     resized_image = [ChatImageUtil circleImage:resized_image];
@@ -154,6 +154,12 @@ static ChatDiskImageCache *sharedInstance = nil;
     UIImage *image;
     if (fileExist) {
 //        [fileManager removeItemAtPath:image_path error:NULL];
+        NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:image_path error:nil];
+//        NSDate *creationDate = (NSDate*)[fileAttribs objectForKey:NSFileCreationDate];
+        NSDate *modificationDate = (NSDate*)[fileAttribs objectForKey:NSFileModificationDate];
+//        NSLog(@"Creation date %@", creationDate);
+        NSLog(@"Modification date %@", modificationDate);
+        
         image = [UIImage imageWithContentsOfFile:image_path];
     }
     return image;
@@ -197,8 +203,9 @@ static ChatDiskImageCache *sharedInstance = nil;
 }
 
 - (NSURLSessionDataTask *)getImage:(NSString *)imageURL sized:(long)size circle:(BOOL)circle completionHandler:(void(^)(NSString *imageURL, UIImage *image))callback {
+    NSLog(@"Cache image url requested: %@", imageURL);
     NSURL *url = [NSURL URLWithString:imageURL];
-    NSString *cache_key = [self urlAsKey:url];
+    NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
     UIImage *image = [self getCachedImage:cache_key sized:size circle:circle];
     if (image) {
         callback(imageURL, image);
@@ -210,8 +217,6 @@ static ChatDiskImageCache *sharedInstance = nil;
         callback(imageURL, nil);
         return nil;
     }
-    NSURLSessionConfiguration *_config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *_session = [NSURLSession sessionWithConfiguration:_config];
     
     NSLog(@"Downloading image. URL: %@", imageURL);
     if (!url) {
@@ -219,6 +224,9 @@ static ChatDiskImageCache *sharedInstance = nil;
         callback(imageURL, nil);
         return nil;
     }
+    
+    NSURLSessionConfiguration *_config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *_session = [NSURLSession sessionWithConfiguration:_config];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSLog(@"Image downloaded: %@", imageURL);
@@ -246,34 +254,40 @@ static ChatDiskImageCache *sharedInstance = nil;
     return task;
 }
 
--(NSString *)urlAsKey:(NSURL *)url {
+-(UIImage *)smallImageOf:(NSString *)profileId {
+    return nil;
+}
+
++(NSString *)urlAsKey:(NSURL *)url {
     NSArray<NSString *> *components = [url pathComponents];
     NSString *key = [[components componentsJoinedByString:@"_"] stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-//    NSLog(@"urlAsKey: %@ as key: %@", url, key);
     return key;
 }
 
 -(void)updateProfile:(NSString *)profileId image:(UIImage *)image {
     
-    // removing all cached versions of this image:
-    [self deleteObjectsFromMemoryCacheOfProfile:profileId];
-    [self deleteFilesFromDiskCacheOfProfile:profileId];
+    [self removeCachedImagesOfProfile:profileId];
     
     NSString *imageURL = [ChatManager profileImageURLOf:profileId];
-    NSString *imageKey = [self urlAsKey:[NSURL URLWithString:imageURL]];
+    NSString *imageKey = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:imageURL]];
     [self addImageToCache:image withKey:imageKey];
     
 //    // adds also a local thumb in cache.
     NSString *thumbImageURL = [ChatManager profileThumbImageURLOf:profileId];
-    NSString *thumbImageKey = [self urlAsKey:[NSURL URLWithString:thumbImageURL]];
+    NSString *thumbImageKey = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:thumbImageURL]];
     [self addImageToCache:image withKey:thumbImageKey];
+}
+
+-(void)removeCachedImagesOfProfile:(NSString *)profileId {
+    [self deleteObjectsFromMemoryCacheOfProfile:profileId];
+    [self deleteFilesFromDiskCacheOfProfile:profileId];
 }
 
 -(void)deleteObjectsFromMemoryCacheOfProfile:(NSString *)profileId {
     NSString *baseURL = [ChatManager profileBaseURL:profileId];
     //    NSLog(@"baseURL to delete: %@", baseURL);
     NSURL *url = [NSURL URLWithString:baseURL];
-    NSString *cache_key = [self urlAsKey:url];
+    NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
     //    NSLog(@"baseURL key: %@", cache_key);
     [self deleteObjectsFromMemoryStartingWith:cache_key];
 }
@@ -285,6 +299,32 @@ static ChatDiskImageCache *sharedInstance = nil;
             [self.memoryObjects removeObjectForKey:key];
         }
     }
+}
+
+-(UIImage *)smallCachedProfileImageFor:(NSString *)profileId {
+    NSString *thumb_photo_url = [ChatManager profileThumbImageURLOf:profileId];
+    // thumb url used as cache-key
+    NSURL *url = [NSURL URLWithString:thumb_photo_url];
+    NSString *thumb_key = [ChatDiskImageCache urlAsKey:url];
+    UIImage *image = [self getCachedImage:thumb_key];
+    NSLog(@"image: %@", image);
+    return image;
+}
+
+- (void)createThumbsInCacheForProfileId:(NSString *)profileId originalImage:(UIImage *)originalImage {
+    // adds to cache the thumb version (computed locally from the original version just downloaded), without need to download it again
+    NSString *thumb_photo_url = [ChatManager profileThumbImageURLOf:profileId];
+    // thumb url used as cache-key
+    NSURL *url = [NSURL URLWithString:thumb_photo_url];
+    NSString *thumb_key = [ChatDiskImageCache urlAsKey:url];
+    // creates the thumb image
+    UIImage *thumb_image = [ChatImageUtil scaleImage:originalImage toSize:CGSizeMake(SMALL_PROFILE_IMAGE_SIZE, SMALL_PROFILE_IMAGE_SIZE)];
+    // adds to cache the thumb image
+    [self addImageToCache:thumb_image withKey:thumb_key];
+    UIImage *resized_image = [ChatImageUtil circleImage:thumb_image];
+    // adds to cache the resized-circle image for conversations list
+    NSString *resized_key = [ChatDiskImageCache sizedKey:thumb_key size:SMALL_PROFILE_IMAGE_SIZE];
+    [self addImageToCache:resized_image withKey:resized_key];
 }
 
 @end

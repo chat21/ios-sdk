@@ -24,6 +24,8 @@ static int CONVERSATION_LIST_CELL_SIZE = 120;
 
 -(id)initWithTableView:(UITableView *)tableView imageCache:(ChatDiskImageCache *)imageCache conversations:(NSArray<ChatConversation *> *)conversations;
 -(UITableViewCell *)configureConversationCell:(ChatConversation *)conversation indexPath:(NSIndexPath *)indexPath;
+-(void)setImageFor:(UIImageView *)image_view imageURL:(NSString *)imageURL isDirect:(BOOL)typeDirect;
+
 +(void)changeReadStatus:(ChatConversation *)conversation forCell:(UITableViewCell *)cell;
 +(void)archiveLabel:(UITableViewCell *)cell archived:(BOOL)archived;
 +(UIImage *)avatarTypeDirect:(BOOL)typeDirect;

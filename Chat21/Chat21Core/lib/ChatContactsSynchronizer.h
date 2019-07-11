@@ -28,8 +28,6 @@
 
 -(id _Nonnull )initWithTenant:(NSString *_Nonnull)tenant user:(ChatUser *_Nonnull)user;
 -(void)startSynchro;
-//-(void)stopSynchro;
-//+(void)insertOrUpdateContactOnDB:(ChatUser *)user;
 +(ChatUser *_Nullable)contactFromDictionaryFactory:(NSDictionary *_Nonnull)snapshot;
 -(void)dispose;
 -(void)addSynchSubscriber:(id<ChatSynchDelegate>_Nonnull)subscriber;

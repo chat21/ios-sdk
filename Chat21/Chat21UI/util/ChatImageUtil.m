@@ -9,6 +9,8 @@
 #import "ChatImageUtil.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ChatUtil.h"
+#import "ChatDiskImageCache.h"
+#import "ChatManager.h"
 
 @implementation ChatImageUtil
 

@@ -9,7 +9,6 @@
 #import "ChatModalCallerDelegate.h"
 #import "UIView+Property.h"
 #import "ChatImageCache.h"
-#import "ChatImageWrapper.h"
 #import "ChatUtil.h"
 #import "ChatDB.h"
 #import "ChatUser.h"
@@ -311,12 +310,12 @@
                                 NSLog(@"Error during image upload.");
                             }
                             ChatDiskImageCache *imageCache = [ChatManager getInstance].imageCache;
-                            [imageCache addImageToCache:self.profileImage withKey:[imageCache urlAsKey:[NSURL URLWithString:downloadURL]]];
+                            [imageCache addImageToCache:self.profileImage withKey:[ChatDiskImageCache urlAsKey:[NSURL URLWithString:downloadURL]]];
                             // adds also a local thumb in cache. The remote thumb get time to be created
                             // and the rendering of conversations will leave the new group conversation
                             // without a downloaded image.
                             NSString *thumbImageURL = [ChatManager profileThumbImageURLOf:group.groupId];
-                            [imageCache addImageToCache:self.profileImage withKey:[imageCache urlAsKey:[NSURL URLWithString:thumbImageURL]]];
+                            [imageCache addImageToCache:self.profileImage withKey:[ChatDiskImageCache urlAsKey:[NSURL URLWithString:thumbImageURL]]];
                             [imageCache getCachedImage:thumbImageURL sized:120 circle:true];
                             
                             [self dismiss:group];

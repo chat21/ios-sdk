@@ -46,12 +46,6 @@ static ChatDB *sharedInstance = nil;
 // name only [a-zA-Z0-9_]
 -(BOOL)createDBWithName:(NSString *)name {
     NSString *docsDir;
-//    NSArray *dirPaths;
-    // Get the documents directory
-//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    docsDir = dirPaths[0];
-//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    docsDir = [dirPaths lastObject];
     NSURL *urlPath = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     docsDir = urlPath.path;
     // Build the path to the database file
@@ -65,9 +59,7 @@ static ChatDB *sharedInstance = nil;
     BOOL isSuccess = YES;
     NSFileManager *filemgr = [NSFileManager defaultManager];
     
-    // **** TESTING ONLY ****
-    // if you add another table or change an existing one you must (for the moment) drop the DB
-//    [self drop_database];
+//    [self drop_database]; // **** TESTING ONLY ****
     const char *dbpath = [databasePath UTF8String];
     
     if ([filemgr fileExistsAtPath: databasePath ] == NO) {

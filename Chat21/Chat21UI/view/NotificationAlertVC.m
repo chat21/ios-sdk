@@ -29,12 +29,12 @@
     
     // adjusting close button position on the right side of the view
     self.closeButton.translatesAutoresizingMaskIntoConstraints = YES;
-    CGRect rect = self.closeButton.frame;
-    float view_width = self.view.frame.size.width;
-    float close_button_width = self.closeButton.frame.size.width;
-    float close_button_x = view_width - close_button_width;
-    CGRect close_rect = CGRectMake(close_button_x, rect.origin.y, rect.size.width, rect.size.height);
-    [self.closeButton setFrame:close_rect];
+//    CGRect rect = self.closeButton.frame;
+//    float view_width = self.view.frame.size.width;
+//    float close_button_width = self.closeButton.frame.size.width;
+//    float close_button_x = view_width - close_button_width;
+//    CGRect close_rect = CGRectMake(close_button_x, rect.origin.y, rect.size.width, rect.size.height);
+//    [self.closeButton setFrame:close_rect];
 }
 
 //The event handling method

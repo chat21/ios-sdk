@@ -88,7 +88,7 @@
                 NSLog(@"REQ-IMAGE-URL: %@ > IMAGE: %@", imageURL, image);
                 if (!image) {
                     UIImage *avatar = [CellConfigurator avatarTypeDirect:YES];
-                    NSString *key = [self.imageCache urlAsKey:[NSURL URLWithString:imageURL]];
+                    NSString *key = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:imageURL]];
                     NSString *sized_key = [ChatDiskImageCache sizedKey:key size:size];
                     UIImage *resized_image = [ChatImageUtil scaleImage:avatar toSize:CGSizeMake(size, size)];
                     [self.imageCache addImageToMemoryCache:resized_image withKey:sized_key];

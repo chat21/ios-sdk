@@ -12,7 +12,6 @@
 #import "ChatManager.h"
 #import "ChatDB.h"
 #import "ChatGroupsDB.h"
-//#import "ChatConversationHandler.h"
 #import "ChatGroupsHandler.h"
 #import "ChatGroup.h"
 #import "ChatImageCache.h"
@@ -24,13 +23,17 @@
 #import "ChatStatusTitle.h"
 #import "ChatSelectGroupMembersLocal.h"
 #import "ChatSelectGroupLocalTVC.h"
-//#import "HelpFacade.h"
 #import "ChatConnectionStatusHandler.h"
 #import "ChatUIManager.h"
 #import "ChatMessage.h"
 #import "ChatLocal.h"
 #import "ChatService.h"
 #import "ChatDiskImageCache.h"
+#import "ChatContactsSynchronizer.h"
+#import "ChatBaseConversationCell.h"
+#import "ChatDMConversationCell.h"
+#import "ChatGroupConversationCell.h"
+#import "ChatImageUtil.h"
 
 @interface ChatConversationsVC ()
 - (IBAction)writeToAction:(id)sender;
@@ -144,8 +147,8 @@
         self.selectedConversationIndexPath = nil;
     }
     
-    ChatManager *chat = [ChatManager getInstance];
-    [chat.connectionStatusHandler isStatusConnectedWithCompletionBlock:^(BOOL connected, NSError *error) {
+    ChatManager *chatm = [ChatManager getInstance];
+    [chatm.connectionStatusHandler isStatusConnectedWithCompletionBlock:^(BOOL connected, NSError *error) {
         if (connected) {
             [self setUIStatusConnected];
         }
@@ -161,6 +164,9 @@
     else {
         [self resetCurrentConversation];
     }
+    
+    ChatContactsSynchronizer *contacts = chatm.contactsSynchronizer;
+    [contacts addSynchSubscriber:self];
     
     [self update_unread];
 }
@@ -286,16 +292,10 @@
 
 -(void)showNotificationWindow:(ChatConversation *)conversation {
     NSString *currentConversationId = self.conversationsHandler.currentOpenConversationId;
-//    NSLog(@"conversation.is_new: %d", conversation.is_new);
-//    NSLog(@"!self.view.window: %d", !self.view.window);
-//    NSLog(@"conversation.conversationId: %@", conversation.conversationId);
-//    NSLog(@"currentConversationId: %@", currentConversationId);
-//    NSLog(@"conversation.is_new && !self.view.window && conversation.conversationId != currentConversationId");
     if ( conversation.is_new
          && !self.view.window // conversationsview hidden
          && conversation.conversationId != currentConversationId ) {
-        
-        [ChatUIManager showNotificationWithMessage:conversation.last_message_text image:nil sender:conversation.conversWith senderFullname:conversation.conversWith_fullname];
+        [ChatUIManager showNotificationWithMessage:conversation.last_message_text image:[self.imageCache smallCachedProfileImageFor:conversation.conversWith] sender:conversation.conversWith senderFullname:conversation.conversWith_fullname];
     }
 }
 
@@ -780,5 +780,58 @@
 //    [context setValue:NSStringFromClass([self class]) forKey:@"section"];
 //    [[HelpFacade sharedInstance] handleWizardSupportFromViewController:self helpContext:context];
 //}
+
+// CONTACT SYNCH PROTOCOL
+
+-(void)synchStart {
+    NSLog(@"SYNCH-START");
+}
+
+- (void)synchEnd {
+    NSLog(@"SYNCH-END");
+}
+
+- (void)contactUpdated:(ChatUser *)oldContact newContact:(ChatUser *)newContact {
+    NSLog(@"Contact updated: %@", oldContact.userId);
+}
+
+- (void)contactImageChanged:(ChatUser *)contact {
+    NSLog(@"Chat conversations, image changed for contact: %@", contact.userId);
+    NSArray *indexes = [self.tableView indexPathsForVisibleRows];
+    for (NSIndexPath *index in indexes) {
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:index];
+        if ([cell isKindOfClass:[ChatBaseConversationCell class]]) {
+            ChatBaseConversationCell *base_cell = (ChatBaseConversationCell *)cell;
+            NSLog(@"conv cell! convWith: %@", base_cell.conversation.conversWith);
+            if ([contact.userId isEqualToString:base_cell.conversation.conversWith]) {
+                NSLog(@"Contact image changed: %@", contact.fullname);
+                if ([cell isKindOfClass:[ChatDMConversationCell class]]) {
+                    ChatDMConversationCell *dm_cell = (ChatDMConversationCell *)cell;
+                    UIImageView *profileImageView = dm_cell.profileImageView;
+                    NSString *imageURL = [ChatManager profileThumbImageURLOf:contact.userId];
+                    int size = CONVERSATION_LIST_CELL_SIZE;
+                    NSURL *url = [NSURL URLWithString:imageURL];
+                    NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
+                    profileImageView.image = [self.imageCache getCachedImage:cache_key sized:size circle:YES];
+                }
+//                else if ([cell isKindOfClass:[ChatGroupConversationCell class]]) {
+//                    UIImageView *profileImageView = cell.profileImageView;
+//                    [self setImageFor:profileImageView imageURL:conversation.thumbImageURL isDirect:YES];
+//                }
+            }
+
+        }
+    }
+}
+
+- (void)contactAdded:(ChatUser *)contact {
+    NSLog(@"Contact added: %@", contact.fullname);
+}
+
+- (void)contactRemoved:(ChatUser *)contact {
+    NSLog(@"Contact removed: %@", contact.fullname);
+}
+
+// #- END CONTACT SYNCH PROTOCOL
 
 @end
