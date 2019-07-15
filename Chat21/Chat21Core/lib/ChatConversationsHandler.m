@@ -46,14 +46,14 @@
     self.conversations_ref_handle_removed = 0;
 }
 
--(void)printAllConversations {
-    NSLog(@"***** CONVERSATIONS DUMP **************************");
-    NSMutableArray *conversations = [[[ChatDB getSharedInstance] getAllConversations] mutableCopy];
-    for (ChatConversation *c in conversations) {
-        NSLog(@"id: %@, user: %@ date: %@",c.conversationId, c.user, c.date);
-    }
-    NSLog(@"******************************* END.");
-}
+//-(void)printAllConversations {
+//    NSLog(@"***** CONVERSATIONS DUMP **************************");
+//    NSMutableArray *conversations = [[[ChatDB getSharedInstance] getAllConversations] mutableCopy];
+//    for (ChatConversation *c in conversations) {
+//        NSLog(@"id: %@, user: %@ date: %@",c.conversationId, c.user, c.date);
+//    }
+//    NSLog(@"******************************* END.");
+//}
 
 -(void)restoreConversationsFromDB {
     self.conversations = [[[ChatDB getSharedInstance] getAllConversationsForUser:self.me archived:NO limit:0] mutableCopy];

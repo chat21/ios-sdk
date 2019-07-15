@@ -46,7 +46,7 @@
 }
 
 -(void)notifySubscribers:(ChatGroup *)group {
-    NSLog(@"ChatConversationHandler: This group was added or changed: %@. Notifying to subscribers...", group.name);
+    NSLog(@"ChatGropusHandler: This group was added or changed: %@. Notifying to subscribers...", group.name);
     for (id<ChatGroupsSubscriber> subscriber in self.subscribers) {
         [subscriber groupAddedOrChanged:group];
     }

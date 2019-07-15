@@ -63,7 +63,7 @@
 -(void)appendImagePlaceholderMessageWithImage:(UIImage *)image attributes:(NSDictionary *)attributes completion:(void(^)(ChatMessage *message, NSError *error)) callback;
 -(void)sendImagePlaceholderMessage:(ChatMessage *)message completion:(void (^)(ChatMessage *, NSError *))callback;
 -(void)sendMessageType:(NSString *)type subtype:(NSString *)subtype text:(NSString *)text imageURL:(NSString *)imageURL metadata:(ChatMessageMetadata *)metadata attributes:(NSDictionary *)attributes completion:(void(^)(ChatMessage *message, NSError *error)) callback;
--(void)restoreMessagesFromDB;
+-(void)restoreMessagesFromDBWithCompletion:(void(^)(void))callback;
 -(NSString *)mediaFolderPath;
 +(NSString *)mediaFolderPathOfRecipient:(NSString *)recipiendId;
 -(void)saveImageToRecipientMediaFolderAsPNG:(UIImage *)image imageFileName:(NSString *)imageFileName;

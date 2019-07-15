@@ -68,10 +68,14 @@
     
     //    self.group.name = nil; // TEST DOWNLOAD GRUPPO METADATI PARZIALI
     if (self.recipient) { // online status only in DM mode
-        [self setupForDirectMessageMode];
+        [self setupForDirectMessageModeWithCompletion:^{
+            [self setContainer];
+        }];
     }
     else if (self.group) { // all group metadata ok
-        [self setupForGroupMode];
+        [self setupForGroupModeWithCompletion:^{
+            [self setContainer];
+        }];
     }
     else {
         NSLog(@"Error: impossible configuration! No Group and no recipient!");
@@ -86,7 +90,7 @@
     [self.stopTestButton setEnabled:NO];
     [self.stopTestButton setTintColor: [UIColor clearColor]];
     
-    [self setContainer];
+//    [self setContainer];
 }
 
 -(BOOL)ImInGroup {
@@ -99,25 +103,29 @@
     return user_found ? YES : NO;
 }
 
--(void)setupForDirectMessageMode {
+-(void)setupForDirectMessageModeWithCompletion:(void(^)(void)) callback {
     [self setupConnectionStatus];
-    [self initConversationHandler];
-    [self setupRecipientOnlineStatus];
-    [self sendTextAsChatOpens];
-    self.recipient.fullname ? [self setTitle:self.recipient.fullname] : [self setTitle:self.recipient.userId];
+    [self initConversationHandlerWithCompletion:^{
+        [self setupRecipientOnlineStatus];
+        [self sendTextAsChatOpens];
+        self.recipient.fullname ? [self setTitle:self.recipient.fullname] : [self setTitle:self.recipient.userId];
+        callback();
+    }];
 }
 
--(void)setupForGroupMode {
+-(void)setupForGroupModeWithCompletion:(void(^)(void)) callback  {
     self.activityIndicator.hidden = YES;
-    [self initConversationHandler];
-    [self writeBoxEnabled];
-    if ([self ImInGroup]) {
-        [self sendTextAsChatOpens];
-    }
-    //    [self.usernameButton setTitle:self.group.name forState:UIControlStateNormal];
-    [self setTitle:self.group.name];
-    [self.group completeGroupMembersMetadataWithCompletionBlock:^() {
-        [self setSubTitle:[ChatUtil groupMembersFullnamesAsStringForUI:self.group.membersFull]];
+    [self initConversationHandlerWithCompletion:^{
+        [self writeBoxEnabled];
+        if ([self ImInGroup]) {
+            [self sendTextAsChatOpens];
+        }
+        [self setTitle:self.group.name];
+        [self.group completeGroupMembersMetadataWithCompletionBlock:^() {
+            [self setSubTitle:[ChatUtil groupMembersFullnamesAsStringForUI:self.group.membersFull]];
+        }];
+        [self setContainer];
+        callback();
     }];
 }
 
@@ -403,18 +411,42 @@
     return NO;
 }
 
--(void)initConversationHandler {
+-(void)initConversationHandlerWithCompletion:(void(^)(void)) callback {
     ChatManager *chatm = [ChatManager getInstance];
-    ChatConversationHandler *handler;
     if (self.recipient) {
-        handler = [chatm getConversationHandlerForRecipient:self.recipient];
+        [chatm getConversationHandlerForRecipient:self.recipient completion:^(ChatConversationHandler *handler) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [handler connect];
+                [self subscribeForMessages:handler];
+                self.conversationHandler = handler;
+                callback();
+            });
+        }];
     } else {
-        handler = [chatm getConversationHandlerForGroup:self.group];
-        [self monitorGroupUpdates];
+        [chatm getConversationHandlerForGroup:self.group completion:^(ChatConversationHandler *handler) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self monitorGroupUpdates];
+                [handler connect];
+                [self subscribeForMessages:handler];
+                self.conversationHandler = handler;
+                callback();
+            });
+        }];
     }
-    [handler connect];
-    [self subscribeForMessages:handler];
-    self.conversationHandler = handler;
+//    [handler connect];
+//    [self subscribeForMessages:handler];
+//    self.conversationHandler = handler;
+//    ChatManager *chatm = [ChatManager getInstance];
+//    ChatConversationHandler *handler;
+//    if (self.recipient) {
+//        handler = [chatm getConversationHandlerForRecipient:self.recipient];
+//    } else {
+//        handler = [chatm getConversationHandlerForGroup:self.group];
+//        [self monitorGroupUpdates];
+//    }
+//    [handler connect];
+//    [self subscribeForMessages:handler];
+//    self.conversationHandler = handler;
 }
 
 -(void)configureIfImGroupMember {
@@ -608,7 +640,7 @@
         [UIView animateWithDuration:animationDuration animations:^{
             self.layoutContraintBottomBarMessageBottomView.constant = keyboardFrame.size.height;
             [self.view layoutIfNeeded];
-            [containerTVC scrollToLastMessage:YES];
+            [self->containerTVC scrollToLastMessage:YES];
         }];
     }
 }

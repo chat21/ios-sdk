@@ -75,22 +75,39 @@
     self.updated_messages_ref_handle = 0;
 }
 
--(void)restoreMessagesFromDB {
+-(void)restoreMessagesFromDBWithCompletion:(void(^)(void))callback {
     NSLog(@"RESTORING ALL MESSAGES FOR CONVERSATION %@", self.conversationId);
-    NSArray *inverted_messages = [[[ChatDB getSharedInstance] getAllMessagesForConversation:self.conversationId start:0 count:200] mutableCopy];
-//    NSLog(@"DB MESSAGES NUMBER: %lu", (unsigned long) inverted_messages.count);
-    NSLog(@"Restoring last 40 messages...");
-    NSEnumerator *enumerator = [inverted_messages reverseObjectEnumerator];
-    for (id element in enumerator) {
-        [self.messages addObject:element];
-    }
-    
-    // set as status:"failed" all the messages in status: "sending"
-    for (ChatMessage *m in self.messages) {
-        if (m.status == MSG_STATUS_SENDING || m.status == MSG_STATUS_UPLOADING) {
-            m.status = MSG_STATUS_FAILED;
-        }
-    }
+    [[ChatDB getSharedInstance] getAllMessagesForConversationSyncronized:self.conversationId start:0 count:200 completion:^(NSArray *messages) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSArray *inverted_messages = [messages mutableCopy];
+            NSLog(@"Restoring last messages of conversation %@...", self.conversationId);
+            NSEnumerator *enumerator = [inverted_messages reverseObjectEnumerator];
+            for (id element in enumerator) {
+                [self.messages addObject:element];
+            }
+            // set as status:"failed" all the messages in status: "sending"
+            for (ChatMessage *m in self.messages) {
+                if (m.status == MSG_STATUS_SENDING || m.status == MSG_STATUS_UPLOADING) {
+                    m.status = MSG_STATUS_FAILED;
+                }
+            }
+            callback();
+        });
+    }];
+//    NSArray *inverted_messages = [[[ChatDB getSharedInstance] getAllMessagesForConversation:self.conversationId start:0 count:200] mutableCopy];
+////    NSLog(@"DB MESSAGES NUMBER: %lu", (unsigned long) inverted_messages.count);
+//    NSLog(@"Restoring last 40 messages...");
+//    NSEnumerator *enumerator = [inverted_messages reverseObjectEnumerator];
+//    for (id element in enumerator) {
+//        [self.messages addObject:element];
+//    }
+//
+//    // set as status:"failed" all the messages in status: "sending"
+//    for (ChatMessage *m in self.messages) {
+//        if (m.status == MSG_STATUS_SENDING || m.status == MSG_STATUS_UPLOADING) {
+//            m.status = MSG_STATUS_FAILED;
+//        }
+//    }
 }
 
 -(void)connect {

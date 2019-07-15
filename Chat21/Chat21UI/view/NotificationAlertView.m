@@ -27,7 +27,7 @@
 */
 
 - (void)initViewWithHeight:(float)height {
-    NSLog(@"NotificationAlertVC loaded.");
+    NSLog(@"NotificationAlertView loaded.");
     UITapGestureRecognizer *singleFingerTap =
     [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleSingleTap:)];

@@ -328,6 +328,15 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
     return messages;
 }
 
+-(void)getAllMessagesForConversationSyncronized:(NSString *)conversationId start:(int)start count:(int)count completion:(void(^)(NSArray *messages)) callback {
+    dispatch_async(serialDatabaseQueue, ^{
+        NSArray *messages = [self getAllMessagesForConversation:conversationId start:0 count:200];
+        if (callback != nil) {
+            callback(messages);
+        }
+    });
+}
+
 -(NSArray*)getAllMessagesForConversation:(NSString *)conversationId start:(int)start count:(int)count {
     NSMutableArray *messages = [[NSMutableArray alloc] init];
     const char *dbpath = [databasePath UTF8String];
@@ -529,30 +538,7 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
             }
         }];
     });
-        
-        
-//        [self getMessageByIdSyncronized:message.messageId completion:^(ChatMessage *message_is_present) {
-//            if (message_is_present) {
-//                if (self.logQuery) {NSLog(@"Present. Not inserting.");}
-//                callback();
-//            }
-//            else {
-//                [self insertMessage:message];
-//                callback();
-//            }
-//        }];
-//    });
 }
-
-//-(BOOL)insertOrUpdateConversation:(ChatConversation *)conversation {
-//    ChatConversation *conv_exists = [self getConversationById:conversation.conversationId];
-//    if (conv_exists) {
-//        return [self updateConversation:conversation];
-//    }
-//    else {
-//        return [self insertConversation:conversation];
-//    }
-//}
 
 -(BOOL)insertConversation:(ChatConversation *)conversation {
     const char *dbpath = [databasePath UTF8String];
@@ -601,7 +587,6 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
 
 // NOTE: fields "conversationId", "user" and "convers_with" are "invariant" and never updated.
 -(BOOL)updateConversation:(ChatConversation *)conversation {
-//    ChatConversation *previous_conv = [self getConversationById:conversation.conversationId]; // TEST ONLY QUERY
     const char *dbpath = [databasePath UTF8String];
     if (sqlite3_open(dbpath, &database) == SQLITE_OK) {
         double timestamp = (double)[conversation.date timeIntervalSince1970]; // NSTimeInterval is a (double)

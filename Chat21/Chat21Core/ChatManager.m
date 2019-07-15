@@ -189,47 +189,47 @@ static ChatManager *sharedInstance = nil;
     return self.conversationsHandler;
 }
 
-//-(void)startConversationHandler:(ChatConversation *)conv {
-//    if (conv.isDirect) {
-//        NSString *recipientId = conv.conversWith;
-//        NSString *recipientFullname = conv.conversWith_fullname;
-//        ChatUser *recipient = [[ChatUser alloc] init:recipientId fullname:recipientFullname];
-//        ChatConversationHandler *handler;
-//        handler = [self getConversationHandlerForRecipient:recipient];
-//        [handler connect];
+//-(ChatConversationHandler *)getConversationHandlerForRecipient:(ChatUser *)recipient {
+//    ChatConversationHandler *handler = [self.handlers objectForKey:recipient.userId];
+//    if (!handler) {
+//        NSLog(@"Conversation Handler not found. Creating & initializing a new one with recipient-id %@", recipient.userId);
+//        handler = [[ChatConversationHandler alloc] initWithRecipient:recipient.userId recipientFullName:recipient.fullname];
+//        [self addConversationHandler:handler];
+//        [handler restoreMessagesFromDB];
+//        NSLog(@"Restored messages (recipient: %@) count: %lu", recipient.userId, (unsigned long)handler.messages.count);
 //    }
-//    else {
-//        NSString *groupId = conv.recipient;
-//        NSString *groupName = conv.recipientFullname;
-//        ChatGroup *group = [[ChatGroup alloc] initWithGroupId:groupId name:groupName];
-//        ChatConversationHandler *handler;
-//        handler = [self getConversationHandlerForGroup:group];
-//        [handler connect];
-//    }
+//    return handler;
 //}
 
--(ChatConversationHandler *)getConversationHandlerForRecipient:(ChatUser *)recipient {
+-(void)getConversationHandlerForRecipient:(ChatUser *)recipient completion:(void(^)(ChatConversationHandler *)) callback {
     ChatConversationHandler *handler = [self.handlers objectForKey:recipient.userId];
     if (!handler) {
         NSLog(@"Conversation Handler not found. Creating & initializing a new one with recipient-id %@", recipient.userId);
         handler = [[ChatConversationHandler alloc] initWithRecipient:recipient.userId recipientFullName:recipient.fullname];
         [self addConversationHandler:handler];
-        [handler restoreMessagesFromDB];
-        NSLog(@"Restored messages (recipient: %@) count: %lu", recipient.userId, (unsigned long)handler.messages.count);
+        [handler restoreMessagesFromDBWithCompletion:^{
+            NSLog(@"Restored messages (recipient: %@) count: %lu", recipient.userId, (unsigned long)handler.messages.count);
+            callback(handler);
+        }];
     }
-    return handler;
+    else {
+        callback(handler);
+    }
 }
 
--(ChatConversationHandler *)getConversationHandlerForGroup:(ChatGroup *)group {
+-(void)getConversationHandlerForGroup:(ChatGroup *)group completion:(void(^)(ChatConversationHandler *)) callback {
     ChatConversationHandler *handler = [self.handlers objectForKey:group.groupId];
     if (!handler) {
         handler = [[ChatConversationHandler alloc] initWithGroupId:group.groupId groupName:group.name];
         [self addConversationHandler:handler];
-        [handler restoreMessagesFromDB];
-        NSLog(@"Restored messages (group: %@) count: %lu", group.groupId, (unsigned long)handler.messages.count);
-//        [handler connect];
+        [handler restoreMessagesFromDBWithCompletion:^{
+            NSLog(@"Restored messages (group: %@) count: %lu", group.groupId, (unsigned long)handler.messages.count);
+            callback(handler);
+        }];
     }
-    return handler;
+    else {
+        callback(handler);
+    }
 }
 
 -(ChatConversationsHandler *)createConversationsHandler {
