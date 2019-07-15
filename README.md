@@ -60,7 +60,7 @@ end
 5.  Open a terminal and `cd` to the directory containing the Podfile.
 
     ```
-    $ cd <path-to-project>/project/
+    $ cd <path-to-project>
     ```
 
 6.  Run the `pod install` command. This will install the SDKs specified in the
