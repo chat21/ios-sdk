@@ -11,7 +11,7 @@ Chat21 allows your users to easily communicate with each other. Chat21 iOS SDK a
 
 s.requires_arc = true
 
-s.version = "0.8.47"
+s.version = "0.8.50"
 
 s.license = { :type => "MIT", :file => "LICENSE" }
 
