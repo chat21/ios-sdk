@@ -15,4 +15,5 @@
 +(void)authWithCustomToken:(NSString *)token completion:(void (^)(ChatUser *user, NSError *))callback;
 +(void)authAnonymousWithCompletion:(void (^)(ChatUser *user, NSError *))callback;
 
+
 @end
