@@ -13,5 +13,6 @@
 
 +(void)authWithEmail:(NSString *)email password:(NSString *)password completion:(void (^)(ChatUser *user, NSError *))callback;
 +(void)authWithCustomToken:(NSString *)token completion:(void (^)(ChatUser *user, NSError *))callback;
++(void)authAnonymousWithCompletion:(void (^)(ChatUser *user, NSError *))callback;
 
 @end

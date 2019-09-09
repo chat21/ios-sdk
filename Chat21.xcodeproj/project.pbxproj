@@ -150,7 +150,6 @@
 		B275AA4522BB734200E2D388 /* ChatTextMessageRightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A98022BB734200E2D388 /* ChatTextMessageRightCell.m */; };
 		B275AA4622BB734200E2D388 /* ChatInfoMessageCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A98122BB734200E2D388 /* ChatInfoMessageCell.h */; };
 		B275AA4722BB734200E2D388 /* ChatImagePreviewVC.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A98222BB734200E2D388 /* ChatImagePreviewVC.h */; };
-		B275AA4822BB734200E2D388 /* NotificationAlertVC.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A98322BB734200E2D388 /* NotificationAlertVC.h */; };
 		B275AA4922BB734200E2D388 /* UIView+Property.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A98422BB734200E2D388 /* UIView+Property.m */; };
 		B275AA4A22BB734200E2D388 /* ChatSelectGroupMembersCellConfigurator.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A98522BB734200E2D388 /* ChatSelectGroupMembersCellConfigurator.h */; };
 		B275AA4B22BB734200E2D388 /* ChatGroupInfoVC.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A98622BB734200E2D388 /* ChatGroupInfoVC.h */; };
@@ -193,7 +192,6 @@
 		B275AA7022BB734200E2D388 /* ChatGroupInfoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A9AB22BB734200E2D388 /* ChatGroupInfoVC.m */; };
 		B275AA7122BB734200E2D388 /* UIView+Property.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A9AC22BB734200E2D388 /* UIView+Property.h */; };
 		B275AA7222BB734200E2D388 /* ChatSelectGroupMembersCellConfigurator.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A9AD22BB734200E2D388 /* ChatSelectGroupMembersCellConfigurator.m */; };
-		B275AA7322BB734200E2D388 /* NotificationAlertVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A9AE22BB734200E2D388 /* NotificationAlertVC.m */; };
 		B275AA7422BB734200E2D388 /* ChatImagePreviewVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A9AF22BB734200E2D388 /* ChatImagePreviewVC.m */; };
 		B275AA7522BB734200E2D388 /* ChatGroupMembersVC.h in Headers */ = {isa = PBXBuildFile; fileRef = B275A9B022BB734200E2D388 /* ChatGroupMembersVC.h */; };
 		B275AA7622BB734200E2D388 /* ChatBaseConversationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B275A9B122BB734200E2D388 /* ChatBaseConversationCell.m */; };
@@ -562,30 +560,30 @@
 		B275A90522BB734200E2D388 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				B275A90622BB734200E2D388 /* ChatService.h */,
-				B275A90722BB734200E2D388 /* ChatConversationsHandler.m */,
-				B275A90822BB734200E2D388 /* FirebaseCustomAuthHelper.h */,
-				B275A90922BB734200E2D388 /* ChatMessageMetadata.m */,
-				B275A90A22BB734200E2D388 /* ChatConversationHandler.h */,
-				B275A90B22BB734200E2D388 /* ChatGroupsHandler.m */,
-				B275A90C22BB734200E2D388 /* ChatPresenceHandler.m */,
-				B275A90D22BB734200E2D388 /* ChatContactsSynchronizer.m */,
-				B275A90E22BB734200E2D388 /* ChatConnectionStatusHandler.h */,
-				B275A90F22BB734200E2D388 /* ChatAuth.m */,
-				B275A91022BB734200E2D388 /* ChatImageDownloadManager.m */,
-				B275A91122BB734200E2D388 /* ChatConversationsHandler.h */,
-				B275A91222BB734200E2D388 /* ChatService.m */,
-				B275A91322BB734200E2D388 /* ChatGroupsSubscriber.h */,
-				B275A91422BB734200E2D388 /* ChatConversationHandler.m */,
-				B275A91522BB734200E2D388 /* ChatMessageMetadata.h */,
-				B275A91622BB734200E2D388 /* FirebaseCustomAuthHelper.m */,
-				B275A91722BB734200E2D388 /* ChatPresenceHandler.h */,
-				B275A91822BB734200E2D388 /* ChatGroupsHandler.h */,
-				B275A91922BB734200E2D388 /* ChatImageDownloadManager.h */,
 				B275A91A22BB734200E2D388 /* ChatAuth.h */,
+				B275A90F22BB734200E2D388 /* ChatAuth.m */,
+				B275A90E22BB734200E2D388 /* ChatConnectionStatusHandler.h */,
 				B275A91B22BB734200E2D388 /* ChatConnectionStatusHandler.m */,
-				B275A91C22BB734200E2D388 /* ChatSynchDelegate.h */,
 				B275A91D22BB734200E2D388 /* ChatContactsSynchronizer.h */,
+				B275A90D22BB734200E2D388 /* ChatContactsSynchronizer.m */,
+				B275A90A22BB734200E2D388 /* ChatConversationHandler.h */,
+				B275A91422BB734200E2D388 /* ChatConversationHandler.m */,
+				B275A91122BB734200E2D388 /* ChatConversationsHandler.h */,
+				B275A90722BB734200E2D388 /* ChatConversationsHandler.m */,
+				B275A91822BB734200E2D388 /* ChatGroupsHandler.h */,
+				B275A90B22BB734200E2D388 /* ChatGroupsHandler.m */,
+				B275A91322BB734200E2D388 /* ChatGroupsSubscriber.h */,
+				B275A91922BB734200E2D388 /* ChatImageDownloadManager.h */,
+				B275A91022BB734200E2D388 /* ChatImageDownloadManager.m */,
+				B275A91522BB734200E2D388 /* ChatMessageMetadata.h */,
+				B275A90922BB734200E2D388 /* ChatMessageMetadata.m */,
+				B275A91722BB734200E2D388 /* ChatPresenceHandler.h */,
+				B275A90C22BB734200E2D388 /* ChatPresenceHandler.m */,
+				B275A90622BB734200E2D388 /* ChatService.h */,
+				B275A91222BB734200E2D388 /* ChatService.m */,
+				B275A91C22BB734200E2D388 /* ChatSynchDelegate.h */,
+				B275A90822BB734200E2D388 /* FirebaseCustomAuthHelper.h */,
+				B275A91622BB734200E2D388 /* FirebaseCustomAuthHelper.m */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -870,7 +868,6 @@
 				B275A9C122BB734200E2D388 /* ChatImageCache.h in Headers */,
 				B275AA2C22BB734200E2D388 /* QBPlasticPopupMenu.h in Headers */,
 				B275AA5722BB734200E2D388 /* ChatGroupConversationCell.h in Headers */,
-				B275AA4822BB734200E2D388 /* NotificationAlertVC.h in Headers */,
 				B275AA0522BB734200E2D388 /* CellConfigurator.h in Headers */,
 				B275A9C222BB734200E2D388 /* ChatUploadsController.h in Headers */,
 				B275A9D622BB734200E2D388 /* ChatService.h in Headers */,
@@ -1122,7 +1119,6 @@
 				B275A9C722BB734200E2D388 /* ChatImageCache.m in Sources */,
 				B275AA5A22BB734200E2D388 /* ChatConversationsVC.m in Sources */,
 				B275A9E022BB734200E2D388 /* ChatImageDownloadManager.m in Sources */,
-				B275AA7322BB734200E2D388 /* NotificationAlertVC.m in Sources */,
 				B275AA3B22BB734200E2D388 /* ChatMessagesVC.m in Sources */,
 				B275AA7722BB734200E2D388 /* ChatGroupConversationCell.m in Sources */,
 				B275A9F122BB734200E2D388 /* ChatGroupsDB.m in Sources */,
