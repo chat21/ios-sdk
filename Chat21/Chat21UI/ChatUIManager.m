@@ -41,7 +41,7 @@ static NotificationAlertView *notificationAlertInstance = nil;
     }];
 }
 
--(void)openConversationMessagesViewAsModalWith:(ChatUser *)recipient viewController:(UIViewController *)vc attributes:(NSDictionary *)attributes withCompletionBlock:(void (^)())completionBlock {
+-(void)openConversationMessagesViewAsModalWithUser:(ChatUser *)recipient viewController:(UIViewController *)vc attributes:(NSDictionary *)attributes withCompletionBlock:(void (^)(void))completionBlock {
     UINavigationController * nc = [self getMessagesViewController];
     ChatMessagesVC *messagesVc = (ChatMessagesVC *)[[nc viewControllers] objectAtIndex:0];
     messagesVc.recipient = recipient;
@@ -49,7 +49,19 @@ static NotificationAlertView *notificationAlertInstance = nil;
     messagesVc.dismissModalCallback = completionBlock;
     messagesVc.attributesToSendAsChatOpens = attributes;
     [vc presentViewController:nc animated:YES completion:^{
-        // NO CALLBACK AFTER PRESENT ACTION COMPLETION
+        completionBlock();
+    }];
+}
+
+-(void)openConversationMessagesViewAsModalWithGroup:(ChatGroup *)group viewController:(UIViewController *)vc attributes:(NSDictionary *)attributes withCompletionBlock:(void (^)(void))completionBlock {
+    UINavigationController * nc = [self getMessagesViewController];
+    ChatMessagesVC *messagesVc = (ChatMessagesVC *)[[nc viewControllers] objectAtIndex:0];
+    messagesVc.group = group;
+    messagesVc.isModal = YES;
+    messagesVc.dismissModalCallback = completionBlock;
+    messagesVc.attributesToSendAsChatOpens = attributes;
+    [vc presentViewController:nc animated:YES completion:^{
+        completionBlock();
     }];
 }
 
