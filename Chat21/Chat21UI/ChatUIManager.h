@@ -16,6 +16,7 @@
 @interface ChatUIManager : NSObject
 
 @property (nonatomic, copy) void (^pushProfileCallback)(ChatUser *user, ChatMessagesVC *vc);
+@property (nonatomic, strong) UIViewController *selectUserViewController;
 
 +(ChatUIManager *)getInstance;
 -(void)openConversationsViewAsModal:(UIViewController *)vc withCompletionBlock:(void (^)(void))completionBlock;

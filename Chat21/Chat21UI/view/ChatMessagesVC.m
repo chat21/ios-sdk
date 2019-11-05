@@ -96,11 +96,19 @@
 -(BOOL)ImInGroup {
     NSLog(@"can I write in this group?");
     if (!self.group) {
+        NSLog(@"No group. NO");
         return NO;
     }
     NSDictionary *members = self.group.members;
     NSString *user_found = [members objectForKey:self.me.userId];
-    return user_found ? YES : NO;
+    if (user_found) {
+        NSLog(@"YES, you can write in this group.");
+        return YES;
+    }
+    else {
+        NSLog(@"NO, you can't write in this group.");
+        return NO;
+    }
 }
 
 -(void)setupForDirectMessageModeWithCompletion:(void(^)(void)) callback {
@@ -390,7 +398,7 @@
 }
 
 -(void)goToProfile:(UIButton*)sender {
-    NSLog(@"RECIPIENT FULL NAME: %@", self.recipient.fullname);
+//    NSLog(@"RECIPIENT FULL NAME: %@", self.recipient.fullname);
     if (self.group) {
         [self performSegueWithIdentifier:@"GroupInfo" sender:self];
     } else {

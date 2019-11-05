@@ -15,7 +15,6 @@
 @implementation ChatService
 
 +(NSString *)archiveConversationService:(NSString *)conversationId {
-    // https://us-central1-chat-v2-dev.cloudfunctions.net/api/tilechat/conversations/support-group-LGdXjl_T98q_Kz3ycdJ
     NSString *tenant = [ChatManager getInstance].tenant;
     NSString *host = [ChatManager getInstance].baseURL;
     NSString *archiveConversationURI = [ChatManager getInstance].archiveConversationURI;
@@ -27,7 +26,6 @@
 }
 
 +(NSString *)archiveAndCloseSupportConversationService:(NSString *)conversationId {
-    // https://us-central1-chat-v2-dev.cloudfunctions.net/supportapi/tilechat/groups/support-group-LG9WBQE2mkIKVIhZmHW
     NSString *tenant = [ChatManager getInstance].tenant;
     NSString *host = [ChatManager getInstance].baseURL;
     NSString *archiveAndCloseSupportConversationURI = [ChatManager getInstance].archiveAndCloseSupportConversationURI;

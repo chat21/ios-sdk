@@ -171,7 +171,7 @@
 //    return complete;
 //}
 
--(void)completeGroupMembersMetadataWithCompletionBlock:(void(^)())callback {
+-(void)completeGroupMembersMetadataWithCompletionBlock:(void(^)(void))callback {
     ChatContactsDB *db = [ChatContactsDB getSharedInstance];
     NSArray<NSString *> *contact_ids = [self.members allKeys];
     [db getMultipleContactsByIdsSyncronized:contact_ids completion:^(NSArray<ChatUser *> *contacts) {

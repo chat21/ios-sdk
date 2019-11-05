@@ -11,8 +11,25 @@
 #import "FirebaseAuth/FIRAuth.h"
 #import "FirebaseAuth/FIRUser.h"
 
-
 @implementation ChatAuth
+
++(void)createUserWithEmail:(NSString *)email password:(NSString *)password completion:(void (^)(ChatUser *user, NSError *error))callback {
+    [[FIRAuth auth] createUserWithEmail:email
+                              password:password
+                            completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"Firebase Register error for email %@: %@", email, error);
+            callback(nil, error);
+        }
+        else {
+            FIRUser *fir_user = authResult.user;
+            ChatUser *chatuser = [[ChatUser alloc] init];
+            chatuser.userId = fir_user.uid;
+            chatuser.email = email;
+            callback(chatuser, nil);
+        }
+    }];
+}
 
 +(void)authWithEmail:(NSString *)email password:(NSString *)password completion:(void (^)(ChatUser *user, NSError *))callback {
     [[FIRAuth auth] signInWithEmail:email password:password completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {

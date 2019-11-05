@@ -758,7 +758,22 @@
 }
 
 - (IBAction)writeToAction:(id)sender {
-//    [self performSegueWithIdentifier:@"SelectUser" sender:self];
+// @property (nonatomic, copy) void (^pushProfileCallback)(ChatUser *user, ChatMessagesVC *vc);
+    
+    
+//    [ChatUIManager getInstance].pushProfileCallback = ^(ChatUser *user, ChatMessagesVC *vc) {
+//        UIStoryboard *profileSB = [UIStoryboard storyboardWithName:@"HelloChat" bundle:nil];
+//        UINavigationController *profileNC = [profileSB instantiateViewControllerWithIdentifier:@"user-profile-vc"];
+//        HelloUserProfileTVC *profileVC = (HelloUserProfileTVC *)[[profileNC viewControllers] objectAtIndex:0];
+//        HelloUser *hello_user = [[HelloUser alloc] init];
+//        hello_user.userid = user.userId;
+//        hello_user.username = user.userId;
+//        hello_user.fullName = user.fullname;
+//        NSLog(@"fullname: %@", user.fullname);
+//        profileVC.user = hello_user;
+//        [vc.navigationController pushViewController:profileVC animated:YES];
+//    };
+//
     [[ChatUIManager getInstance] openSelectContactViewAsModal:self withCompletionBlock:^(ChatUser *contact, BOOL canceled) {
         if (canceled) {
             NSLog(@"Select Contact canceled");

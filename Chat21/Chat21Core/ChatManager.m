@@ -100,7 +100,6 @@ static ChatManager *sharedInstance = nil;
 
     ChatManager *inst = [ChatManager getInstance];
     NSLog(@"tenant %@", inst.tenant);
-//    sharedInstance.loggedUser = nil;
 }
 
 +(void)configureServices {
@@ -137,12 +136,16 @@ static ChatManager *sharedInstance = nil;
     sharedInstance.tenant = @"chat";
     sharedInstance.groupsMode = YES;
     sharedInstance.tabBarIndex = 0;
+    sharedInstance.synchronizeContacts = YES;
     if (dictionary) {
         if ([dictionary objectForKey:@"tenant"]) {
             sharedInstance.tenant = [dictionary objectForKey:@"tenant"];
         }
         if ([dictionary objectForKey:@"groups-mode"]) {
             sharedInstance.groupsMode = [[dictionary objectForKey:@"groups-mode"] boolValue];
+        }
+        if ([dictionary objectForKey:@"synchronize-contacts"]) {
+            sharedInstance.synchronizeContacts = [[dictionary objectForKey:@"synchronize-contacts"] boolValue];
         }
         if ([dictionary objectForKey:@"conversations-tabbar-index"]) {
             sharedInstance.tabBarIndex = [[dictionary objectForKey:@"conversations-tabbar-index"] integerValue];
@@ -318,7 +321,9 @@ static ChatManager *sharedInstance = nil;
              if (user) {
                  NSLog(@"Signed in.");
                  [self initPresenceHandler];
-                 [self initContactsSynchronizer];
+                 if (self.synchronizeContacts) {
+                     [self initContactsSynchronizer];
+                 }
                  if (self.groupsMode) {
                      [self initGroupsHandler];
                  }

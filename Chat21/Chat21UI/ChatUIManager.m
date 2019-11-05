@@ -16,6 +16,7 @@
 #import "ChatGroup.h"
 #import "ChatSelectGroupLocalTVC.h"
 #import "ChatArchivedConversationsTVC.h"
+#import "ChatSelectContactProtocol.h"
 
 static ChatUIManager *sharedInstance = nil;
 static NotificationAlertView *notificationAlertInstance = nil;
@@ -66,13 +67,28 @@ static NotificationAlertView *notificationAlertInstance = nil;
 }
 
 -(void)openSelectContactViewAsModal:(UIViewController *)vc withCompletionBlock:(void (^)(ChatUser *contact, BOOL canceled))completionBlock {
-    UINavigationController * nc = [self getSelectContactViewController];
-    ChatSelectUserLocalVC *selectContactVC = (ChatSelectUserLocalVC *)[[nc viewControllers] objectAtIndex:0];
-//    selectContactVC.isModal = YES;
-    selectContactVC.completionCallback = completionBlock;
-    [vc presentViewController:nc animated:YES completion:^{
-        // NO CALLBACK AFTER PRESENT ACTION COMPLETION
-    }];
+    if(!self.selectUserViewController) {
+        UINavigationController * nc = [self getSelectContactViewController];
+        ChatSelectUserLocalVC *selectContactVC = (ChatSelectUserLocalVC *)[[nc viewControllers] objectAtIndex:0];
+        selectContactVC.completionCallback = completionBlock;
+        [vc presentViewController:nc animated:YES completion:^{
+            // NO CALLBACK AFTER PRESENT ACTION COMPLETION
+        }];
+    } else {
+        if ([self.selectUserViewController conformsToProtocol:@protocol(ChatSelectContactProtocol)])
+        {
+            UIViewController <ChatSelectContactProtocol> *select_user_vc = (UIViewController <ChatSelectContactProtocol> *) self.selectUserViewController;
+            UINavigationController * nc = [self getSelectContactViewController];
+            nc.viewControllers = [NSArray arrayWithObject: select_user_vc];
+            select_user_vc.completionCallback = completionBlock;
+            [vc presentViewController:nc animated:YES completion:^{
+                // NO CALLBACK AFTER PRESENT ACTION COMPLETION
+            }];
+        }
+        else {
+            NSLog(@"Error, self.selectUserViewController does not conform to protocol ChatSelectContactProtocol.");
+        }
+    }
 }
 
 -(void)openCreateGroupViewAsModal:(UIViewController *)vc withCompletionBlock:(void (^)(ChatGroup *group, BOOL canceled))completionBlock {

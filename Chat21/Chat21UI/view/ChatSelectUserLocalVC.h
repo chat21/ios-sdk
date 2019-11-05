@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ChatSynchDelegate.h"
+#import "ChatSelectContactProtocol.h"
 
 @class ChatImageCache;
 @class ChatGroup;
@@ -14,28 +15,26 @@
 @class ChatDiskImageCache;
 @class ChatUserCellConfigurator;
 
-@interface ChatSelectUserLocalVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, ChatSynchDelegate>
+@interface ChatSelectUserLocalVC : UIViewController <UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, ChatSynchDelegate, ChatSelectContactProtocol>
 
-@property (strong, nonatomic) ChatUser *userSelected;
-@property (strong, nonatomic) NSArray<ChatUser *> *users;
-//@property (strong, nonatomic) NSMutableArray<ChatUser *> *recentUsers;
-//@property (strong, nonatomic) NSMutableArray *allUsers;
-//@property (nonatomic, retain) NSMutableDictionary *imageDownloadsInProgress;
-@property (nonatomic, copy) void (^completionCallback)(ChatUser *contact, BOOL canceled);
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
-@property (strong, nonatomic) NSString *searchBarPlaceholder;
-@property (strong, nonatomic) NSString *textToSearch;
-@property (strong, nonatomic) NSTimer *searchTimer;
-@property (strong, nonatomic) NSString *lastUsersTextSearch;
-@property (strong, nonatomic) ChatGroup *group;
+@property (strong, nonatomic) ChatUser * _Nullable userSelected;
+@property (strong, nonatomic) NSArray<ChatUser *> * _Nullable users;
+//@property (nonatomic, copy) void (^completionCallback)(ChatUser *contact, BOOL canceled);
+@property (nonatomic, copy) void (^ _Nullable completionCallback)( ChatUser * _Nullable contact, BOOL canceled);
+@property (weak, nonatomic) IBOutlet UITableView * _Nullable tableView;
+@property (weak, nonatomic) IBOutlet UISearchBar * _Nullable searchBar;
+@property (strong, nonatomic) NSString * _Nullable searchBarPlaceholder;
+@property (strong, nonatomic) NSString * _Nullable textToSearch;
+@property (strong, nonatomic) NSTimer * _Nullable searchTimer;
+@property (strong, nonatomic) NSString * _Nullable lastUsersTextSearch;
+@property (strong, nonatomic) ChatGroup * _Nullable group;
 @property (assign, nonatomic) BOOL synchronizing;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicator;
-@property (strong, nonatomic) ChatUserCellConfigurator *cellConfigurator;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *cancelButton;
+@property (strong, nonatomic) UIActivityIndicatorView * _Nullable activityIndicator;
+@property (strong, nonatomic) ChatUserCellConfigurator * _Nullable cellConfigurator;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem * _Nullable cancelButton;
 
 //-(void)networkError;
-- (IBAction)CancelAction:(id)sender;
+- (IBAction)CancelAction:(id _Nonnull )sender;
 
 @end
 

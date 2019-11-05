@@ -236,11 +236,11 @@
     }
     
     // TEMPORARY
-    NSLog(@"recpient_id: %@", self.recipient);
-    if ([self.recipient isEqualToString:@"bot_5b439b28e10db0001461d992"]) {
-        [message_dict setObject:@"5b439a78e10db0001461d98f" forKey:@"projectid"];
-    }
-    
+//    NSLog(@"recpient_id: %@", self.recipient);
+//    if ([self.recipient isEqualToString:@"bot_5b439b28e10db0001461d992"]) {
+//        [message_dict setObject:@"5b439a78e10db0001461d98f" forKey:@"projectid"];
+//    }
+//
     if (self.subtype) {
         [message_dict setObject:self.subtype forKey:MSG_FIELD_SUBTYPE];
     }
@@ -271,6 +271,15 @@
     
     if (self.lang) {
         [message_dict setObject:self.lang forKey:MSG_FIELD_LANG];
+    }
+    if (self.additionalRootProperties) {
+        for(NSString *key in self.additionalRootProperties) {
+            NSString *value = [self.additionalRootProperties objectForKey:key];
+            NSLog(@"found root property: key=%@ value=%@", key, value);
+            [message_dict setObject:value forKey:key];
+        }
+    } else {
+        NSLog(@"No additional root properties were found.");
     }
     return message_dict;
 }

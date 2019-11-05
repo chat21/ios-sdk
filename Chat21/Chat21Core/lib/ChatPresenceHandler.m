@@ -96,6 +96,7 @@
         }
     }];
 }
+
 -(void)lastOnlineDateForUser:(NSString *)userid withCallback:(void (^)(NSDate *lastOnlineDate))callback {
     // apps/{TENANT}/presence/{USERID}/lastOnline
     FIRDatabaseReference *lastOnlineRef = [ChatPresenceHandler lastOnlineRefForUser:userid];

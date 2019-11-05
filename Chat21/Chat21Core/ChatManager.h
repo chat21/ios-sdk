@@ -52,6 +52,7 @@
 @property (strong, nonatomic) FIRAuthStateDidChangeListenerHandle authStateDidChangeListenerHandle;
 //@property (assign, nonatomic) FIRDatabaseHandle connectedRefHandle;
 @property (assign, nonatomic) BOOL groupsMode;
+@property (assign, nonatomic) BOOL synchronizeContacts;
 @property (assign, nonatomic) NSInteger tabBarIndex;
 
 //+(void)configureWithAppId:(NSString *)app_id;

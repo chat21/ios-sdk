@@ -94,12 +94,6 @@
     
     //    NSInteger lasttime = [self lastQueryTime];
     [self lastQueryTimeWithCompletion:^(long lasttime) {
-        NSArray *contacts = [[ChatContactsDB getSharedInstance] getAllContacts];
-        for (ChatUser *c in contacts) {
-            NSLog(@"name %@ createdon %ld", c.fullname, c.createdon);
-        }
-        NSLog(@"Last contacts createdon: %ld", (long)lasttime);
-        
         if (!self.contact_ref_handle_added) {
             self.contact_ref_handle_added = [[[self.contactsRef queryOrderedByChild:@"timestamp"] queryStartingAtValue:@(lasttime)] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot *snapshot) {
                 NSLog(@"FIREBASE: ADDED CONTACT SNAPSHOT: %@", snapshot);
