@@ -17,7 +17,6 @@
 #import "ChatImageUtil.h"
 
 @interface ChatContactsSynchronizer () {
-//    dispatch_queue_t serialDatabaseQueue;
 }
 @end
 
@@ -87,19 +86,18 @@
 }
 
 -(void)synchContacts {
-    NSLog(@"Remote contacts synch start.");
+    [ChatManager logDebug:@"Remote contacts synch start."];
     FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
     self.contactsRef = [rootRef child: [ChatUtil contactsPath]];
     [self.contactsRef keepSynced:YES];
     
-    //    NSInteger lasttime = [self lastQueryTime];
     [self lastQueryTimeWithCompletion:^(long lasttime) {
         if (!self.contact_ref_handle_added) {
             self.contact_ref_handle_added = [[[self.contactsRef queryOrderedByChild:@"timestamp"] queryStartingAtValue:@(lasttime)] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot *snapshot) {
-                NSLog(@"FIREBASE: ADDED CONTACT SNAPSHOT: %@", snapshot);
+                [ChatManager logDebug:@"FIREBASE: ADDED CONTACT SNAPSHOT: %@", snapshot];
                 ChatUser *contact = [ChatContactsSynchronizer contactFromSnapshotFactory:snapshot];
                 if (contact && contact.createdon == lasttime) {
-                    NSLog(@"SAME CONTACT.TIMESTAMP OF LASTTIME. IGNORING CONTACT %@", contact.fullname);
+                    [ChatManager logDebug:@"SAME CONTACT.TIMESTAMP OF LASTTIME. IGNORING CONTACT %@", contact.fullname];
                 }
                 else {
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -113,7 +111,7 @@
                     });
                 }
             } withCancelBlock:^(NSError *error) {
-                NSLog(@"%@", error.description);
+                [ChatManager logDebug:@"%@", error.description];
             }];
         }
         
@@ -122,10 +120,10 @@
         if (!self.contact_ref_handle_changed) {
             self.contact_ref_handle_changed =
             [[[self.contactsRef queryOrderedByChild:@"timestamp"] queryStartingAtValue:@(lasttime)]observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot *snapshot) {
-                NSLog(@"FIREBASE: UPDATED CONTACT SNAPSHOT: %@", snapshot);
+                [ChatManager logDebug:@"FIREBASE: UPDATED CONTACT SNAPSHOT: %@", snapshot];
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                     ChatUser *contact = [ChatContactsSynchronizer contactFromSnapshotFactory:snapshot];
-                    NSLog(@"changed contact timestamp: %ld", contact.createdon);
+                    [ChatManager logDebug:@"changed contact timestamp: %ld", contact.createdon];
                     if (contact) {
                         [[ChatContactsDB getSharedInstance] getContactByIdSyncronized:contact.userId completion:^(ChatUser *oldContact) {
                             [self insertOrUpdateContactOnDB:contact];
@@ -135,7 +133,7 @@
                     }
                 });
             } withCancelBlock:^(NSError *error) {
-                NSLog(@"%@", error.description);
+                [ChatManager logError:@"%@", error.description];
             }];
         }
         
@@ -143,14 +141,14 @@
             self.contact_ref_handle_removed =
             [self.contactsRef observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot *snapshot) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                    NSLog(@"FIREBASE: REMOVED CONTACT SNAPSHOT: %@", snapshot);
+                    [ChatManager logDebug:@"FIREBASE: REMOVED CONTACT SNAPSHOT: %@", snapshot];
                     ChatUser *contact = [ChatContactsSynchronizer contactFromSnapshotFactory:snapshot];
                     if (contact) {
                         [self removeContactOnDB:contact];
                     }
                 });
             } withCancelBlock:^(NSError *error) {
-                NSLog(@"%@", error.description);
+                [ChatManager logError:@"%@", error.description];
             }];
         }
     }];
@@ -159,12 +157,6 @@
 -(void)startSynchTimer {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.synchronizing = YES;
-//       if (self.synchTimer) {
-//           if ([self.synchTimer isValid]) {
-//               [self.synchTimer invalidate];
-//           }
-//           self.synchTimer = nil;
-//       }
         [self resetSynchTimer];
         self.synchTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(synchTimerPaused:) userInfo:nil repeats:NO];
    });
@@ -198,41 +190,10 @@
             callback(0);
         }
     }];
-//    ChatUser *most_recent = [[ChatContactsDB getSharedInstance] getMostRecentContact];
-//    if (most_recent) {
-//        long lasttime = most_recent.createdon;
-//        return lasttime;
-//    }
-//    else {
-//        return 0;
-//    }
 }
-
-//-(long)lastQueryTime {
-//    ChatUser *most_recent = [[ChatContactsDB getSharedInstance] getMostRecentContact];
-//    if (most_recent) {
-//        long lasttime = most_recent.createdon;
-//        return lasttime;
-//    }
-//    else {
-//        return 0;
-//    }
-//}
 
 static NSString *LAST_CONTACTS_TIMESTAMP_KEY = @"last-contacts-timestamp";
 static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
-
-//-(void)saveLastTimestamp:(NSInteger)timestamp {
-//    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-//    [userPreferences setInteger:timestamp forKey:LAST_CONTACTS_TIMESTAMP_KEY];
-//    [userPreferences synchronize];
-//}
-//
-//-(NSInteger)restoreLastTimestamp {
-//    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-//    NSInteger timestamp = (NSInteger)[userPreferences integerForKey:LAST_CONTACTS_TIMESTAMP_KEY];
-//    return timestamp;
-//}
 
 -(void)setFirstSynchroOver:(BOOL)isOver {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -250,42 +211,34 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
     return firstSinchro;
 }
 
-//-(void)stopSynchro {
-//    [self.contactsRef removeAllObservers];
-//}
-
 -(void)insertOrUpdateContactOnDB:(ChatUser *)user {
     __block ChatUser *_user = user;
     [[ChatContactsDB getSharedInstance] insertOrUpdateContactSyncronized:_user completion:^{
-        self.synchronizing ? NSLog(@"SYNCHRONIZING") : NSLog(@"NO-SYNCHRONIZING");
+        self.synchronizing ? [ChatManager logDebug:@"SYNCHRONIZING"] : [ChatManager logDebug:@"NO-SYNCHRONIZING"];
         _user = nil;
         [self startSynchTimer];
     }];
 }
 
 -(void)removeContactOnDB:(ChatUser *)user {
-    NSLog(@"REMOVING CONTACT: %@ (%@ %@)", user.userId, user.firstname, user.lastname);
+    [ChatManager logDebug:@"REMOVING CONTACT: %@ (%@ %@)", user.userId, user.firstname, user.lastname];
     [[ChatContactsDB getSharedInstance] removeContactSynchronized:user.userId completion:nil];
 }
 
 -(void)dispose {
-//    [self.contactsRef removeObserverWithHandle:self.contact_ref_handle_added];
-//    [self.contactsRef removeObserverWithHandle:self.contact_ref_handle_changed];
-//    [self.contactsRef removeObserverWithHandle:self.contact_ref_handle_removed];
     [self.contactsRef removeAllObservers];
 }
 
 +(ChatUser *)contactFromSnapshotFactory:(FIRDataSnapshot *)snapshot {
-    NSLog(@"Snapshot.value is of type: %@", [snapshot.value class]); // [snapshot.value boolValue]
-//    if (![snapshot.value isKindOfClass:[NSString class]]) {
+    [ChatManager logDebug:@"Snapshot.value is of type: %@", [snapshot.value class]];
     if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
         NSString *userId = snapshot.value[FIREBASE_USER_ID];
-        if (!userId) { // user_id can t be null
-            NSLog(@"ERROR. NO UID. INVALID USER.");
+        if (!userId) {
+            [ChatManager logDebug:@"ERROR. NO UID. INVALID USER."];
             return nil;
         }
         else if (![snapshot.value[FIREBASE_USER_ID] isKindOfClass:[NSString class]]) { // user_id must be a string
-            NSLog(@"ERROR. NO UID. INVALID USER.");
+            [ChatManager logDebug:@"ERROR. NO UID. INVALID USER."];
             return nil;
         }
         
@@ -321,20 +274,8 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
         else {
             email = @"";
         }
-        
-//        NSString *imageurl = snapshot.value[FIREBASE_USER_IMAGEURL];
-//        if (!imageurl) {
-//            imageurl = @"";
-//        }
-//        else if ([snapshot.value[FIREBASE_USER_IMAGEURL] isKindOfClass:[NSString class]]) { // must be a string
-//            imageurl = snapshot.value[FIREBASE_USER_IMAGEURL];
-//        }
-//        else {
-//            imageurl = @"";
-//        }
-        
         NSNumber *imagechangedat = snapshot.value[FIREBASE_USER_IMAGE_CHANGED_AT];
-        NSLog(@"imagechangedat %@", imagechangedat);
+        [ChatManager logDebug:@"imagechangedat %@", imagechangedat];
         
         NSNumber *createdon = snapshot.value[FIREBASE_USER_TIMESTAMP];
         
@@ -343,7 +284,6 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
         contact.lastname = lastname;
         contact.userId = userId;
         contact.email = email;
-//        contact.imageurl = imageurl;
         if (imagechangedat) {
             contact.imageChangedAt = [imagechangedat integerValue];// / 1000;
         }
@@ -351,7 +291,7 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
         return contact;
     }
     else {
-        NSLog(@"ERROR! USER (SNAPSHOT.VALUE) IS NOT A DICTIONARY.");
+        [ChatManager logError:@"ERROR! USER (SNAPSHOT.VALUE) IS NOT A DICTIONARY."];
     }
     return nil;
 }
@@ -359,11 +299,11 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
 +(ChatUser *)contactFromDictionaryFactory:(NSDictionary *)snapshot {
     NSString *userId = userId = snapshot[FIREBASE_USER_ID];
     if (!userId) { // user_id can t be null
-        NSLog(@"ERROR. NO UID. INVALID USER.");
+        [ChatManager logError:@"ERROR. NO UID. INVALID USER."];
         return nil;
     }
     else if (![snapshot[FIREBASE_USER_ID] isKindOfClass:[NSString class]]) { // user_id must be a string
-        NSLog(@"ERROR. NO UID. INVALID USER.");
+        [ChatManager logDebug:@"ERROR. NO UID. INVALID USER."];
         return nil;
     }
     
@@ -399,20 +339,9 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
     else {
         email = @"";
     }
-    
-//    NSString *imageurl = snapshot[FIREBASE_USER_IMAGEURL];
-//    if (!imageurl) {
-//        imageurl = @"";
-//    }
-//    else if ([snapshot[FIREBASE_USER_IMAGEURL] isKindOfClass:[NSString class]]) { // must be a string
-//        imageurl = snapshot[FIREBASE_USER_IMAGEURL];
-//    }
-//    else {
-//        imageurl = @"";
-//    }
-    
+        
     NSNumber *imagechangedat = snapshot[FIREBASE_USER_IMAGE_CHANGED_AT];
-    NSLog(@"imagechangedat %@", imagechangedat);
+    [ChatManager logDebug:@"imagechangedat %@", imagechangedat];
     
     NSNumber *createdon = snapshot[FIREBASE_USER_TIMESTAMP];
     
@@ -421,7 +350,6 @@ static NSString *FIRST_SYNCHRO_KEY = @"first-contacts-synchro";
     contact.lastname = lastname;
     contact.userId = userId;
     contact.email = email;
-//    contact.imageurl = imageurl;
     if (imagechangedat) {
         contact.imageChangedAt = [imagechangedat integerValue];
     }

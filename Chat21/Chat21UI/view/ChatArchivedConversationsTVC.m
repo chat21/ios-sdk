@@ -124,10 +124,6 @@
     self.deleted_handle = 0;
 }
 
-//#protocol SHPConversationsViewDelegate
-
-//protocol SHPConversationsViewDelegate
-
 #pragma mark - Table view data source
 
 -(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {

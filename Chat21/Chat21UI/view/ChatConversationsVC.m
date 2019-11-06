@@ -50,21 +50,13 @@
     //autodim
     self.tableView.estimatedRowHeight = 70;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
-    
-    NSLog(@"Conversations viewDidLoad start");
-    
     self.settings = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"settings" ofType:@"plist"]];
-    
     self.imageCache = [ChatManager getInstance].imageCache;
-    
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
-    
     self.groupsMode =  [ChatManager getInstance].groupsMode;
-    
     [self customizeTitleView];
     [self setupTitle:@"Chat"];
     [self setUIStatusDisconnected];
-//    self.isModal = true;
     if (!self.isModal && !self.navigationController.presentingViewController) {
         // preserve centered title if no left barbutton is shown
         UIBarButtonItem *emptyButton = [[UIBarButtonItem alloc] initWithTitle:@"                    " style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -90,7 +82,6 @@
 }
 
 -(void)archived_action:(id)sender {
-    NSLog(@"archived action");
     [[ChatUIManager getInstance] pushArchivedConversationsView:self];
 }
 
@@ -221,7 +212,6 @@
 
 -(void)subscribe:(ChatConversationsHandler *)handler {
     if (self.added_handle > 0) {
-        NSLog(@"Subscribe(): just subscribed to conversations handler. Do nothing.");
         return;
     }
     self.added_handle = [handler observeEvent:ChatEventConversationAdded withCallback:^(ChatConversation *conversation) {
@@ -231,7 +221,6 @@
         [self conversationReceived:conversation];
     }];
     self.read_status_changed_handle = [handler observeEvent:ChatEventConversationReadStatusChanged withCallback:^(ChatConversation *conversation) {
-        NSLog(@"Conversation %@ '%@' read status changed to: %d, index: %d", conversation.conversationId, conversation, conversation.is_new, conversation.indexInMemory);
         NSIndexPath* indexPathToReload = [NSIndexPath indexPathForRow:conversation.indexInMemory inSection:SECTION_CONVERSATIONS_INDEX];
 
         [ChatConversationsVC updateReadStatusForConversationCell:conversation atIndexPath:indexPathToReload inTableView:self.tableView];
@@ -257,33 +246,18 @@
     self.disconnectedHandle = 0;
 }
 
-//#protocol SHPConversationsViewDelegate
-
--(void)didFinishConnect:(ChatConversationsHandler *)handler error:(NSError *)error {
-    if (!error) {
-        NSLog(@"ChatConversationsHandler Initialization finished with success.");
-    } else {
-        NSLog(@"ChatConversationsHandler Initialization finished with error: %@", error);
-    }
-}
-
-//protocol SHPConversationsViewDelegate
-
 -(void)conversationReceived:(ChatConversation *)conversation {
-    // STUDIARE: since iOS 5, you can do the move like so:
+    // STUDY: since iOS 5, you can do the move like so:
     // [tableView moveRowAtIndexPath:indexPathOfRowToMove toIndexPath:indexPathOfTopRow];
     
-//    NSLog(@"New conversation received %@ by %@ (sender: %@)", conversation.last_message_text, conversation.conversWith_fullname, conversation.sender);
     [self showNotificationWindow:conversation];
     [self.tableView reloadData];
-//    [self printAllConversations];
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         [self update_unread];
     });
 }
 
 -(void)conversationDeleted:(ChatConversation *)conversation {
-    NSLog(@"Conversation removed %@ by %@ (sender: %@)", conversation.last_message_text, conversation.conversWith_fullname, conversation.sender);
     [self.tableView reloadData];
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         [self update_unread];
@@ -366,21 +340,21 @@
             NSLog(@"Archiving and closing support conversation...");
             [ChatService archiveAndCloseSupportConversation:conversation completion:^(NSError *error) {
                 if (error) {
-                    NSLog(@"Archive and Close operation failed with error: %@", error);
+                    [ChatManager logError:@"Archive and Close operation failed with error: %@", error];
                 }
                 else {
-                    NSLog(@"Support conversation %@ successfully archived and closed.", conversation.conversationId);
+                    [ChatManager logDebug:@"Support conversation %@ successfully archived and closed.", conversation.conversationId];
                 }
             }];
         }
         else {
-            NSLog(@"Archiving and closing conversation...");
+            [ChatManager logDebug:@"Archiving and closing conversation..."];
             [ChatService archiveConversation:conversation completion:^(NSError *error) {
                 if (error) {
-                    NSLog(@"Archive operation failed with error: %@", error);
+                    [ChatManager logError:@"Archive operation failed with error: %@", error];
                 }
                 else {
-                    NSLog(@"Conversation %@ successfully archived.", conversation.conversationId);
+                    [ChatManager logDebug:@"Conversation %@ successfully archived.", conversation.conversationId];
                 }
             }];
         }
@@ -391,7 +365,6 @@
     NSString *title = [ChatLocal translate:@"ReadConversationAction"];
     title = conversation.is_new ? [ChatLocal translate:@"ReadConversationAction"] : [ChatLocal translate:@"UnreadConversationAction"];
     UITableViewRowAction *readAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:title  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-        NSLog(@"Read...");
         BOOL read_stastus = !conversation.is_new;
         conversation.is_new = read_stastus;
         // instantly updates the conversation in memory & local db
@@ -411,7 +384,7 @@
     [CellConfigurator changeReadStatus:conversation forCell:cell];
 }
 
-//// Override to support editing the table view.
+// Override to support editing the table view.
 //- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 //    NSLog(@"commitEditingStyle");
 //    if (editingStyle == UITableViewCellEditingStyleDelete) {
@@ -428,13 +401,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
     return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
     if (section == SECTION_GROUP_MENU_INDEX) {
         return 1;
     } else {
@@ -537,9 +508,7 @@
             vc.recipient = nil;
         }
         if (self.selectedGroupId) {
-            NSLog(@"SELECTED GROUP ID: %@", self.selectedGroupId);
             vc.group = [[ChatManager getInstance] groupById:self.selectedGroupId];
-            NSLog(@"vc.group: %@", vc.group);
             if (!vc.group) {
                 // GROUP INFO NOT FOUND. GROUPS STILL NOT SYNCHONIZED OR I'M HERE
                 // BECAUSE A PUSH NOTIFICATION THAT STARTED THE APPLICATION (AND THE GROUP WASN'T STILL SYNCHRONIZED)
@@ -568,9 +537,9 @@
 
 -(void)openConversationWithUser:(ChatUser *)user orGroup:(ChatGroup *)group sendMessage:(NSString *)text attributes:(NSDictionary *)attributes {
     
-    NSLog(@"Opening conversation with recipient: %@ or group: %@", user.userId, group.groupId);
-    NSLog(@"self.selectedConversationId: %@", self.selectedConversationId);
-    NSLog(@"self.conversationsHandler.currentOpenConversationId: %@", self.conversationsHandler.currentOpenConversationId);
+    [ChatManager logDebug:@"Opening conversation with recipient: %@ or group: %@", user.userId, group.groupId];
+    [ChatManager logDebug:@"self.selectedConversationId: %@", self.selectedConversationId];
+    [ChatManager logDebug:@"self.conversationsHandler.currentOpenConversationId: %@", self.conversationsHandler.currentOpenConversationId];
     NSString *newConvId;
     if (user != nil) {
         newConvId = user.userId;
@@ -579,11 +548,11 @@
         newConvId = group.groupId;
     }
     else {
-        NSLog(@"ERROR. User and Group can't be both null.");
+        [ChatManager logError:@"ERROR. User and Group can't be both null."];
         return;
     }
     if ([self.selectedConversationId isEqualToString:newConvId]) {
-        NSLog(@"Conversation %@ already open. User: %@ group: %@",self.selectedConversationId, user.userId, group.groupId);
+        [ChatManager logDebug:@"Conversation %@ already open. User: %@ group: %@",self.selectedConversationId, user.userId, group.groupId];
         return;
     }
     self.selectedRecipientTextToSend = text;
@@ -591,27 +560,15 @@
     if (user) {
         self.selectedRecipientId = user.userId;
         self.selectedRecipientFullname = user.fullname;
-//        self.selectedConversationId = user.userId;
         self.selectedRecipientAttributesToSend = attributes;
     }
     else {
         self.selectedGroupId = group.groupId;
         self.selectedGroupName = group.name;
-//        self.selectedConversationId = group.groupId;
     }
     [self loadViewIfNeeded];
     
-    // popViewControllerAnimated completionCallback
-//    [CATransaction begin];
-//    [CATransaction setCompletionBlock:^{
-//        [self performSegueWithIdentifier:@"CHAT_SEGUE" sender:self];
-//    }];
-//    performSelectedConversationOnAppear = YES;
-//    [self.navigationController popViewControllerAnimated:NO];
-//    [CATransaction commit];
-    
     [self.navigationController popToRootViewControllerAnimated:NO];
-//    [self performSegueWithIdentifier:@"CHAT_SEGUE" sender:self];
     BOOL isConversationsVCOnscreen = self.view.window != nil;
     if (isConversationsVCOnscreen) {
         [self performSegueWithIdentifier:@"CHAT_SEGUE" sender:self];
@@ -758,22 +715,6 @@
 }
 
 - (IBAction)writeToAction:(id)sender {
-// @property (nonatomic, copy) void (^pushProfileCallback)(ChatUser *user, ChatMessagesVC *vc);
-    
-    
-//    [ChatUIManager getInstance].pushProfileCallback = ^(ChatUser *user, ChatMessagesVC *vc) {
-//        UIStoryboard *profileSB = [UIStoryboard storyboardWithName:@"HelloChat" bundle:nil];
-//        UINavigationController *profileNC = [profileSB instantiateViewControllerWithIdentifier:@"user-profile-vc"];
-//        HelloUserProfileTVC *profileVC = (HelloUserProfileTVC *)[[profileNC viewControllers] objectAtIndex:0];
-//        HelloUser *hello_user = [[HelloUser alloc] init];
-//        hello_user.userid = user.userId;
-//        hello_user.username = user.userId;
-//        hello_user.fullName = user.fullname;
-//        NSLog(@"fullname: %@", user.fullname);
-//        profileVC.user = hello_user;
-//        [vc.navigationController pushViewController:profileVC animated:YES];
-//    };
-//
     [[ChatUIManager getInstance] openSelectContactViewAsModal:self withCompletionBlock:^(ChatUser *contact, BOOL canceled) {
         if (canceled) {
             NSLog(@"Select Contact canceled");

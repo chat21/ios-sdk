@@ -35,7 +35,7 @@
 //-(ChatUser *)getMostRecentContact;
 //-(BOOL)insertContact:(ChatUser *)contact;
 -(NSArray*)getAllContacts; // test only
--(void)drop_database;
+//-(void)drop_database;
 
 @end
 

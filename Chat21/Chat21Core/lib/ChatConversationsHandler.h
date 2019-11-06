@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-//#import "SHPConversationsViewDelegate.h"
 #import "ChatEventType.h"
 #import "FirebaseDatabase/FIRDatabaseQuery.h"
 
@@ -29,7 +28,6 @@
 @property (assign, nonatomic) FIRDatabaseHandle conversations_ref_handle_removed;
 @property (assign, nonatomic) FIRDatabaseHandle archived_conversations_ref_handle_added;
 @property (assign, nonatomic) FIRDatabaseHandle archived_conversations_ref_handle_removed;
-//@property (assign, nonatomic) id <SHPConversationsViewDelegate> delegateView;
 @property (strong, nonatomic) NSString *currentOpenConversationId;
 @property (nonatomic, strong) FIRDatabaseReference *rootRef;
 @property (strong, nonatomic) NSString *tenant;

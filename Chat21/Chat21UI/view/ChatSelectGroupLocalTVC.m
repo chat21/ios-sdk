@@ -102,9 +102,6 @@
 }
 
 -(void)loadGroups {
-//    ChatGroupsDB *db = [ChatGroupsDB getSharedInstance];
-//    ChatUser *user = [ChatManager getSharedInstance].loggedUser;
-//    NSMutableArray *groups = [db getAllGroupsForUserSyncronized:user.userId];
     NSDictionary *groups_dict = [[ChatManager getInstance] allGroups];
     NSLog(@"GROUPS LOADED! %lu", (unsigned long) self.groups.count);
     self.groups = [[NSMutableArray alloc] init];

@@ -9,11 +9,12 @@
 #import "ChatConnectionStatusHandler.h"
 #import <libkern/OSAtomic.h>
 #import "FirebaseDatabase/FIRDatabaseReference.h"
+#import "ChatManager.h"
 
 @implementation ChatConnectionStatusHandler
 
 -(void)connect {
-    NSLog(@"Connection status.");
+    [ChatManager logDebug:@"Connection status."];
     NSString *url = @"/.info/connected";
     FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
     self.connectedRef = [rootRef child:url];
@@ -21,13 +22,13 @@
     // event
     if (!self.connectedRefHandle) {
         self.connectedRefHandle = [self.connectedRef observeEventType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot *snapshot) {
-            NSLog(@"snapshot %@ - %d", snapshot, [snapshot.value boolValue]);
+            [ChatManager logDebug:@"snapshot %@ - %d", snapshot, [snapshot.value boolValue]];
             BOOL status = [snapshot.value boolValue];
             if(status) {
-                NSLog(@".connected.");
+                [ChatManager logDebug:@".connected."];
                 [self notifyEvent:ChatConnectionStatusEventConnected];
             } else {
-                NSLog(@".not connected.");
+                [ChatManager logDebug:@".not connected."];
                 [self notifyEvent:ChatConnectionStatusEventDisconnected];
             }
         }];
@@ -39,15 +40,12 @@
     [self.connectedRef observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         // Get user value
         if([snapshot.value boolValue]) {
-//            NSLog(@"..connected once..");
             callback(YES, nil);
         }
         else {
-//            NSLog(@"..not connected once..");
             callback(NO, nil);
         }
     } withCancelBlock:^(NSError * _Nonnull error) {
-        NSLog(@"%@", error.localizedDescription);
         callback(NO, error);
     }];
 }

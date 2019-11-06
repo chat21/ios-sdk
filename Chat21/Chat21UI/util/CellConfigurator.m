@@ -73,7 +73,7 @@
         info_message_label.hidden = NO;
         sender_label.hidden = YES;
         last_message_label.hidden = YES;
-        info_message_label.text = [[NSString alloc] initWithFormat:@"Errore nella creazione del gruppo. Tocca per riprovare"];
+        info_message_label.text = [[NSString alloc] initWithFormat:@"Error creating group. Tap to retry"];
     }
     else if (conversation.status == CONV_STATUS_JUST_CREATED) {
         info_message_label.hidden = NO;
@@ -142,37 +142,8 @@
         ChatStyles *styles = [ChatStyles sharedInstance];
         last_message_label.textColor = styles.lastMessageTextColor;
         last_message_label.font = [UIFont systemFontOfSize:last_message_label.font.pointSize];
-        // CONV_STATUS_LAST_MESSAGE
-//        group_message_label.textColor = [UIColor lightGrayColor];
-//        group_message_label.font = [UIFont systemFontOfSize:message_label.font.pointSize];
         new_messages_icon.hidden = YES;
     }
-//    UILabel *subject_label = (UILabel *)[cell viewWithTag:2];
-//    UILabel *message_label = (UILabel *)[cell viewWithTag:3];
-//    UILabel *group_message_label = (UILabel *)[cell viewWithTag:22];
-//    UIImageView *new_messages_icon = (UIImageView *)[cell viewWithTag:50];
-//    if (conversation.is_new) {
-//        // BOLD STYLE
-//        subject_label.font = [UIFont boldSystemFontOfSize:subject_label.font.pointSize];
-//        // CONV_STATUS_JUST_CREATED
-//        message_label.textColor = [UIColor blackColor];
-//        message_label.font = [UIFont boldSystemFontOfSize:message_label.font.pointSize];
-//        // CONV_STATUS_LAST_MESSAGE
-//        group_message_label.textColor = [UIColor blackColor];
-//        group_message_label.font = [UIFont boldSystemFontOfSize:message_label.font.pointSize];
-//        new_messages_icon.hidden = NO;
-//    }
-//    else {
-//        // NORMAL STYLE
-//        subject_label.font = [UIFont systemFontOfSize:subject_label.font.pointSize];
-//        // CONV_STATUS_JUST_CREATED
-//        message_label.textColor = [UIColor lightGrayColor];
-//        message_label.font = [UIFont systemFontOfSize:message_label.font.pointSize];
-//        // CONV_STATUS_LAST_MESSAGE
-//        group_message_label.textColor = [UIColor lightGrayColor];
-//        group_message_label.font = [UIFont systemFontOfSize:message_label.font.pointSize];
-//        new_messages_icon.hidden = YES;
-//    }
 }
 
 -(UITableViewCell *)configureDirectConversationCell:(ChatConversation *)conversation indexPath:(NSIndexPath *)indexPath {
@@ -190,7 +161,6 @@
     last_message_label.text = [conversation textForLastMessage:me];
     UIImageView *profileImageView = cell.profileImageView;
     [self setImageFor:profileImageView imageURL:conversation.thumbImageURL isDirect:YES];
-//    [self setImageFor:profileImageView imageURL:conversation.thumbImageURL typeDirect:YES];
     date_label.text = [conversation dateFormattedForListView];
     if (conversation.is_new) {
         // BOLD STYLE
@@ -237,31 +207,23 @@
     if (archivedImageView) {
         if (archived) {
             archivedImageView.hidden = NO;
-//            label.hidden = NO;
-//            label.layer.cornerRadius = 5.0f;
-//            label.layer.masksToBounds = NO;
-//            label.layer.borderWidth = .5f;
-//            label.layer.borderColor = [UIColor grayColor].CGColor;
         }
         else {
-//            label.hidden = YES;
             archivedImageView.hidden = YES;
         }
     }
-//    label.text = [ChatLocal translate:@"ArchivedBadgeLabel"];
 }
 
 -(void)setImageFor:(UIImageView *)image_view imageURL:(NSString *)imageURL isDirect:(BOOL)typeDirect {
-    NSLog(@"test");
     int size = CONVERSATION_LIST_CELL_SIZE;
     // first from cache
     UIImage *image = [CellConfigurator setupPhotoCell:image_view typeDirect:typeDirect imageURL:imageURL imageCache:self.imageCache size:size];
     // then from remote
     if (image == nil) {
         [self.imageCache getImage:imageURL sized:size circle:YES completionHandler:^(NSString *imageURL, UIImage *image) {
-            NSLog(@"requested-image-url-CONFIGURATOR: %@ > image: %@", imageURL, image);
+            [ChatManager logDebug:@"requested-image-url-CONFIGURATOR: %@ > image: %@", imageURL, image];
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"REQ-IMAGE-URL: %@ > IMAGE: %@", imageURL, image);
+                [ChatManager logDebug:@"REQ-IMAGE-URL: %@ > IMAGE: %@", imageURL, image];
                 if (!image) {
                     UIImage *avatar = [CellConfigurator avatarTypeDirect:typeDirect];
                     NSString *key = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:imageURL]];
@@ -296,49 +258,6 @@
     }
 }
 
-//-(void)setImageFor:(UIImageView *)image_view imageURL:(NSString *)imageURL typeDirect:(BOOL)typeDirect {
-//    int size = CONVERSATION_LIST_CELL_SIZE;
-//    UIImage *image = [CellConfigurator setupPhotoCell:image_view typeDirect:typeDirect imageURL:imageURL imageCache:self.imageCache size:size];
-//    // then from remote
-//    if (image == nil) {
-//        [self.imageCache getImage:imageURL sized:size circle:YES completionHandler:^(NSString *imageURL, UIImage *image) {
-//            NSLog(@"requested-image-url-CONFIGURATOR: %@ > image: %@", imageURL, image);
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                NSLog(@"REQ-IMAGE-URL: %@ > IMAGE: %@", imageURL, image);
-//                if (!image) {
-//                    UIImage *avatar = [CellConfigurator avatarTypeDirect:typeDirect];
-//                    NSString *key = [self.imageCache urlAsKey:[NSURL URLWithString:imageURL]];
-//                    NSString *sized_key = [ChatDiskImageCache sizedKey:key size:size];
-//                    UIImage *resized_image = [ChatImageUtil scaleImage:avatar toSize:CGSizeMake(size, size)];
-//                    [self.imageCache addImageToMemoryCache:resized_image withKey:sized_key];
-//                    return;
-//                }
-//                // find indexpath of this imageURL (aka conversation).
-//                int index_path_row = 0;
-//                NSIndexPath *conversationIndexPath = nil;
-//                for (ChatConversation *conversation in self.conversations) {
-//                    if ([conversation.thumbImageURL isEqualToString:imageURL]) {
-//                        conversationIndexPath = [NSIndexPath indexPathForRow:index_path_row inSection:SECTION_CONVERSATIONS_INDEX];
-//                        break;
-//                    }
-//                    index_path_row++;
-//                }
-//
-//                if (conversationIndexPath && [CellConfigurator isIndexPathVisible:conversationIndexPath tableView:self.tableView]) {
-//                    ChatBaseConversationCell *cell = (id)[self.tableView cellForRowAtIndexPath:conversationIndexPath];
-//                    UIImageView *image_view = cell.profileImageView; //(UIImageView *)[cell viewWithTag:1];
-//                    if (!cell) {
-//                        return;
-//                    }
-//                    if (image) {
-//                        image_view.image = image;
-//                    }
-//                }
-//            });
-//        }];
-//    }
-//}
-
 +(UIImage *)setupDefaultImageFor:(UIImageView *)imageView typeDirect:(BOOL)typeDirect {
     UIImage *avatar = [CellConfigurator avatarTypeDirect:typeDirect];
     imageView.image = avatar;
@@ -359,7 +278,7 @@
 +(UIImage *)setupPhotoCell:(UIImageView *)image_view typeDirect:(BOOL)typeDirect imageURL:(NSString *)imageURL imageCache:(ChatDiskImageCache *)imageCache size:(int)size {
     NSURL *url = [NSURL URLWithString:imageURL];
     NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
-    NSLog(@"Image cache. URL AS KEY: %@", cache_key);
+    [ChatManager logDebug:@"Image cache. URL AS KEY: %@", cache_key];
     UIImage *image = [imageCache getCachedImage:cache_key sized:size circle:YES];
     if (image) {
         image_view.image = image;
@@ -369,20 +288,6 @@
     }
     return image;
 }
-
-//-(UIImage *)setupPhotoCell:(UITableViewCell *)cell typeDirect:(BOOL)typeDirect imageURL:(NSString *)imageURL {
-//    UIImageView *image_view = (UIImageView *)[cell viewWithTag:1];
-//    NSURL *url = [NSURL URLWithString:imageURL];
-//    NSString *cache_key = [self.imageCache urlAsKey:url];
-//    UIImage *image = [self.imageCache getCachedImage:cache_key sized:CONVERSATION_LIST_CELL_SIZE circle:YES];
-//    if (image) {
-//        image_view.image = image;
-//    }
-//    else {
-//        [self setupDefaultImageFor:image_view typeDirect:typeDirect];
-//    }
-//    return image;
-//}
 
 +(BOOL)isIndexPathVisible:(NSIndexPath *)indexPath tableView:(UITableView *)tableView {
     NSArray *indexes = [tableView indexPathsForVisibleRows];

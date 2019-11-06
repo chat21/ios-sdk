@@ -30,10 +30,25 @@
 @class ChatDiskImageCache;
 @class ChatMessage;
 
+static int const CHAT_LOG_LEVEL_ERROR = 0;
+static int const CHAT_LOG_LEVEL_WARNING = 1;
+static int const CHAT_LOG_LEVEL_INFO = 2;
+static int const CHAT_LOG_LEVEL_DEBUG = 3;
+
+static NSString *CHAT_DEFAULT_TENANT = @"chat";
+
+// CONFIG KEYS
+static NSString *CHAT_CONFIG_KEY_TENANT = @"tenant";
+static NSString *CHAT_CONFIG_KEY_GROUPS_MODE = @"groups-mode";
+static NSString *CHAT_CONFIG_KEY_SYNCHRONIZE_CONTACTS = @"synchronize-contacts";
+static NSString *CHAT_CONFIG_KEY_CONVERSATIONS_TABBAR_INDEX = @"conversations-tabbar-index";
+static NSString *CHAT_CONFIG_KEY_SHOW_WRITE_TO = @"show-write-to";
+static NSString *CHAT_CONFIG_KEY_SHOW_ARCHIVED = @"show-archived";
+static NSString *CHAT_CONFIG_KEY_LOG_LEVEL = @"log-level";
+
 @interface ChatManager : NSObject
 
 // plist properties
-@property (nonatomic, strong) NSString *tenant;
 @property (nonatomic, strong) NSString *baseURL;
 @property (nonatomic, strong) NSString *archiveConversationURI;
 @property (nonatomic, strong) NSString *archiveAndCloseSupportConversationURI;
@@ -51,12 +66,19 @@
 //@property (nonatomic, strong) ChatConversationsVC * conversationsVC;
 @property (strong, nonatomic) FIRAuthStateDidChangeListenerHandle authStateDidChangeListenerHandle;
 //@property (assign, nonatomic) FIRDatabaseHandle connectedRefHandle;
+
+// CONFIG
+@property (nonatomic, strong) NSString *tenant;
+@property (assign, nonatomic) NSInteger tabBarIndex;
 @property (assign, nonatomic) BOOL groupsMode;
 @property (assign, nonatomic) BOOL synchronizeContacts;
-@property (assign, nonatomic) NSInteger tabBarIndex;
+@property (assign, nonatomic) BOOL showWriteTo;
+@property (assign, nonatomic) BOOL showArchived;
+@property (assign, nonatomic) NSInteger logLevel;
 
-//+(void)configureWithAppId:(NSString *)app_id;
 +(void)configure;
++(void)configureWith:(NSDictionary *)config;
+
 +(ChatManager *)getInstance;
 -(void)getContactLocalDB:(NSString *)userid withCompletion:(void(^)(ChatUser *user))callback;
 -(void)getUserInfoRemote:(NSString *)userid withCompletion:(void(^)(ChatUser *user))callback;
@@ -116,6 +138,12 @@
 +(NSString *)profileThumbImageURLOf:(NSString *)profileId;
 +(NSString *)fileURLOfProfile:(NSString *)profileId fileName:(NSString *)fileName;
 +(NSString *)profileBaseURL:(NSString *)profileId;
+
+// LOG
++(void)logDebug:(NSString*)status, ...;
++(void)logInfo:(NSString*)status, ...;
++(void)logError:(NSString*)status, ...;
++(void)logWarn:(NSString*)status, ...;
 
 @property (nonatomic, copy) ChatMessage *(^onBeforeMessageSend)(ChatMessage *msg);
 @property (nonatomic, copy) ChatMessage *(^onMessageNew)(ChatMessage *msg);

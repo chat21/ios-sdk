@@ -54,10 +54,10 @@
     
     
     self.connectionsRefHandle = [connectedRef observeEventType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"setupMyPresence: snapshot %@ - %d", snapshot, [snapshot.value boolValue]);
+        [ChatManager logDebug:@"setupMyPresence: snapshot %@ - %d", snapshot, [snapshot.value boolValue]];
         BOOL status = [snapshot.value boolValue];
         if(status) {
-            NSLog(@"Connection established (or reconnected after a loss of connection)");
+            [ChatManager logDebug:@"Connection established (or reconnected after a loss of connection)"];
             if (!self.deviceConnectionRef) {
                 if (self.deviceConnectionKey) {
                     self.deviceConnectionRef = [myConnectionsRef child:self.deviceConnectionKey];
@@ -69,7 +69,7 @@
                 }
             }
             else {
-                NSLog(@"self.deviceConnectionRef already set. Cannot be set again.");
+                [ChatManager logDebug:@"self.deviceConnectionRef already set. Cannot be set again."];
             }
             [self.deviceConnectionRef setValue:@YES];
             // when this device disconnects, remove it
@@ -85,14 +85,9 @@
     FIRDatabaseReference *onlineRef = [ChatPresenceHandler onlineRefForUser:userid];
     [onlineRef observeEventType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot *snapshot) {
         if(snapshot.exists) {
-//            NSLog(@"ONLINE: %@", snapshot);
             callback(YES);
-//            self.online = YES;
-//            [self onlineStatus];
         } else {
             callback(NO);
-//            self.online = NO;
-//            [self onlineStatus];
         }
     }];
 }
