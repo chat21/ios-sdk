@@ -123,7 +123,6 @@
                            style:UIAlertActionStyleDefault
                            handler:^(UIAlertAction * action)
                            {
-                               NSLog(@"Show photo");
                                [self showPhoto];
                            }];
     
@@ -132,7 +131,6 @@
                             style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction * action)
                             {
-                                NSLog(@"Open photo");
                                 [self takePhoto];
                             }];
     UIAlertAction* photo_from_library = [UIAlertAction
@@ -150,7 +148,6 @@
                                  NSLog(@"cancel");
                              }];
     if (self.currentProfilePhoto != nil) {
-//        [alert addAction:delete];
         [alert addAction:show];
     }
     NSLog(@"groupsowner %@", self.group.owner);
@@ -173,7 +170,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    NSLog(@"reloading data group members: %@", self.group.members);
+    [ChatManager logDebug:@"reloading data group members: %@", self.group.members];
     [self setupUI];
 }
 
@@ -230,16 +227,12 @@
         vc.group = self.group;
     }
     else if ([[segue identifier] isEqualToString:@"ChangeGroupName"]) {
-        NSLog(@"preparing segue to modal");
         UINavigationController *nc = (UINavigationController *)[segue destinationViewController];
-        NSLog(@"nc %@", nc);
         ChatChangeGroupNameVC *vc = (ChatChangeGroupNameVC *)nc.viewControllers[0];
-        NSLog(@"vc %@", vc);
         vc.group = self.group;
     }
     else if ([[segue identifier] isEqualToString:@"imagePreview"]) {
         ChatShowImage *vc = (ChatShowImage *)[segue destinationViewController];
-        NSLog(@"vc %@", vc);
         vc.image = self.currentProfilePhoto;
     }
 }
@@ -265,7 +258,6 @@
 }
 
 -(void)initializeCamera {
-    NSLog(@"cinitializeCamera...");
     self.imagePickerController = [[UIImagePickerController alloc] init];
     self.imagePickerController.delegate = self;
     self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -273,7 +265,6 @@
 }
 
 -(void)initializePhotoLibrary {
-    NSLog(@"initializePhotoLibrary...");
     self.photoLibraryController = [[UIImagePickerController alloc] init];
     self.photoLibraryController.delegate = self;
     self.photoLibraryController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;// SavedPhotosAlbum;
@@ -290,9 +281,7 @@
     UIImage *bigImage = [info objectForKey:@"UIImagePickerControllerEditedImage"];
     NSURL *local_image_url = [info objectForKey:@"UIImagePickerControllerImageURL"];
     NSString *image_original_file_name = [local_image_url lastPathComponent];
-    NSLog(@"image_original_file_name: %@", image_original_file_name);
     self.scaledImage = bigImage;
-    NSLog(@"image: %@", self.scaledImage);
     self.scaledImage = [ChatImageUtil adjustEXIF:self.scaledImage];
     self.scaledImage = [ChatImageUtil scaleImage:self.scaledImage toSize:CGSizeMake(1200, 1200)];
     //    [self performSegueWithIdentifier:@"imagePreview" sender:nil];
@@ -300,53 +289,27 @@
 }
 
 -(void)sendImage:(UIImage *)image {
-    NSLog(@"Sending image...");
     [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
     [SVProgressHUD show];
     [[ChatManager getInstance] uploadProfileImage:image profileId:self.profileId completion:^(NSString *downloadURL, NSError *error) {
         NSLog(@"Image uploaded. Download url: %@", downloadURL);
         [SVProgressHUD dismiss];
         if (error) {
-            NSLog(@"Error during image upload.");
+            [ChatManager logError:@"Error during image upload."];
         }
         else {
             [self setupCurrentProfileViewWithImage:image];
             [self.imageCache updateProfile:self.profileId image:image];
         }
     } progressCallback:^(double fraction) {
-        // NSLog(@"progress: %f", fraction);
     }];
 }
-
-//-(void)deleteImage {
-//    NSLog(@"deleting profile image");
-//    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
-//    [SVProgressHUD show];
-//    [[ChatManager getInstance] deleteProfileImage:self.profileId completion:^(NSError *error) {
-//        [SVProgressHUD dismiss];
-//        // remove this three lines of code
-//        self.currentProfilePhoto = nil;
-//        [self resetProfilePhoto];
-//        ChatUser *loggedUser = [ChatManager getInstance].loggedUser;
-//        [self.imageCache deleteImageFromCacheWithKey:[self.imageCache urlAsKey:[NSURL URLWithString:loggedUser.profileImageURL]]];
-//        if (error) {
-//            NSLog(@"Error while deleting profile image.");
-//        }
-//        else {
-//            self.currentProfilePhoto = nil;
-//            [self resetProfilePhoto];
-//            ChatUser *loggedUser = [ChatManager getInstance].loggedUser;
-//            [self.imageCache deleteImageFromCacheWithKey:[self.imageCache urlAsKey:[NSURL URLWithString:loggedUser.profileImageURL]]];
-//        }
-//    }];
-//}
 
 // **************************************************
 // *************** END PHOTO SECTION ****************
 // **************************************************
 
 - (IBAction)unwindToGroupInfoVC:(UIStoryboardSegue *)sender {
-    NSLog(@"unwindToGroupInfoVC");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

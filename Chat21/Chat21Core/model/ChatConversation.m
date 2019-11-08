@@ -44,7 +44,7 @@
     }
     FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
     FIRDatabaseReference *ref = [[rootRef child: conversations_path] child:self.conversationId];
-    NSLog(@"Conversation ref: %@", ref);
+    [ChatManager logDebug:@"Conversation ref: %@", ref];
     return ref;
 }
 

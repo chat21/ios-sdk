@@ -30,6 +30,7 @@
 #import "ChatMessageCell.h"
 #import "ChatStyles.h"
 #import "ChatTextMessageRightCell.h"
+#import "ChatManager.h"
 
 @interface ChatMessagesTVC ()
 
@@ -117,50 +118,32 @@ static NSString *COPY_LINK_KEY = @"Copy link";
 -(void)copy_action:(id)sender {
     UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
     generalPasteboard.string = self.selectedText;
-    NSLog(@"Text copied!");
 }
 
 -(void)info_action:(id)sender {
-    NSLog(@"Message info action!");
     [self performSegueWithIdentifier:@"info" sender:self];
 }
 
 -(void)resend_action:(id)sender {
     NSString *selectedMessageId = self.selectedMessage.messageId;
-    NSLog(@"Resending message with id %@", selectedMessageId);
     [self.conversationHandler resendMessageWithId:selectedMessageId completion:^(ChatMessage *message, NSError *error) {
-        NSLog(@"Message %@ successfully resent.", selectedMessageId);
+        [ChatManager logDebug:@"Message %@ successfully resent.", selectedMessageId];
     }];
 }
 
 static NSString *MATCH_TYPE_URL = @"URL";
 static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 
-//-(BOOL)photosViewController:(NYTPhotosViewController *)controller handleActionButtonTappedForPhoto:(id <NYTPhoto>)photo {
-//    NSLog(@"Activity...");
-//    UIImage *image = photo.image;
-//    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[image] applicationActivities:nil];
-//    activityViewController.completionWithItemsHandler = ^(NSString * __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
-//    };
-//        [self presentViewController:activityViewController animated:YES completion:nil];
-//    return NO;
-//}
-
 - (void)longTapOnCell:(UIGestureRecognizer *)recognizer
 {
     if (recognizer.state != UIGestureRecognizerStateBegan) {
         return;
     }
-    
-    NSLog(@"Long tap on: %@", recognizer.view);
     UITableViewCell *containerCell = (UITableViewCell *)recognizer.view.superview.superview.superview;
-    NSLog(@"suoerview; %@", containerCell);
     if ([containerCell isKindOfClass:[ChatTextMessageRightCell class]]) {
-        NSLog(@"Right Cell");
         self.right_cell_hl = YES;
     }
     else if ([containerCell isKindOfClass:[ChatTextMessageLeftCell class]]) {
-        NSLog(@"Left Cell");
         self.right_cell_hl = NO;
     }
     
@@ -168,27 +151,15 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:tapLocation];
     ChatMessage *message = [self.conversationHandler.messages objectAtIndex:indexPath.row];
     self.selectedMessage = message;
-    NSLog(@"Message.text: %@", message.text);
     if ([message typeImage]) {
-        NSLog(@"Long tap On Cell: Image message");
         [self processLongTapOnImageMessage:recognizer message:message];
     }
     else {
-        NSLog(@"Long tap On Cell: Text message");
         [self processLongTapOnTextMessage:recognizer message:message];
     }
-    
-    // get the index path of tapped cell:
-//    CGPoint tapLocation = [recognizer locationInView:self.tableView];
-//    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:tapLocation];
-    
-    
-//    ChatMessage *message = [self.conversationHandler.messages objectAtIndex:indexPath.row];
-    
 }
 
 -(void)processLongTapOnImageMessage:(UIGestureRecognizer *)recognizer message:(ChatMessage *)message {
-    NSLog(@"Long tap on Image message.");
     [self showCustomPopupMenu:recognizer];
 }
 
@@ -206,11 +177,9 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     if (urlsMatches) {
         for (NSTextCheckingResult *match in urlsMatches) {
             if (NSLocationInRange(indexOfCharacter, match.range)) {
-                NSLog(@"Link tapped WITH LONG TAP! %@", components.text);
                 selectedMatch = match;
                 selectedmatchType = MATCH_TYPE_URL;
                 NSString* link = [components.text substringWithRange:match.range];
-//                [self unhighlightTappedLink];
                 self.selectedHighlightLabel = label;
                 self.selectedHighlightRange = match.range;
                 self.selectedHighlightLink = link;
@@ -222,11 +191,8 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     // check chat type links
     NSArray *chatLinkMatches = components.chatLinkMatches;
     if (chatLinkMatches) {
-        NSLog(@"analyz chatLinkMatches %lu", (unsigned long)chatLinkMatches.count);
         for (NSTextCheckingResult *match in chatLinkMatches) {
-            NSLog(@"analyz match pos: %lu len: %lu", match.range.location, match.range.length);
             if (NSLocationInRange(indexOfCharacter, match.range)) {
-                NSLog(@"Chat Link tapped WITH LONG TAP!");
                 selectedMatch = match;
                 selectedmatchType = MATCH_TYPE_CHAT_LINK;
                 NSString* link = [components.text substringWithRange:match.range];
@@ -241,7 +207,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     
     if (selectedMatch) {
         if ([selectedmatchType isEqualToString:MATCH_TYPE_URL]) {
-            NSLog(@"Opening link menuc for: %@", self.selectedHighlightLink);
             [self highlightTappedLinkWithTimeout:NO];
             [self setupMenuForSelectedLink];
         }
@@ -253,40 +218,20 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 
 - (void)tapOnCell:(UIGestureRecognizer *)recognizer
 {
-    NSLog(@"TAP on: %@", recognizer.view);
     // get the index path:
     CGPoint tapLocation = [recognizer locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:tapLocation];
     ChatMessage *message = [self.conversationHandler.messages objectAtIndex:indexPath.row];
-    NSLog(@"Message.text: %@", message.text);
     if ([message typeImage]) {
-        NSLog(@"tapOnCell: Image message");
         [self processTapOnImageMessage:recognizer message:message];
     }
     else {
-        NSLog(@"tapOnCell: Text message");
         [self processTapOnTextMessage:recognizer message:message];
     }
-//    UIView *view = (UIView *)recognizer.view;
-//    if ([view isKindOfClass:[UIImageView class]]) {
-//        NSLog(@"UIImageView");
-//    }
-//    else if ([view isKindOfClass:[UILabel class]]) {
-//        NSLog(@"UILabel");
-//    }
 }
 
 -(void)processTapOnImageMessage:(UIGestureRecognizer *)recognizer message:(ChatMessage *)message {
-//    if (![recognizer.view isKindOfClass:[UIImageView class]]) {
-//        NSLog(@"Error. recognizer.view is not UILabel for a message of type text.");
-//        return;
-//    }
-    NSLog(@"Processing tap on Image message.");
     self.selectedImageURL = [[NSString alloc] initWithFormat:@"file://%@", [message imagePathFromMediaFolder] ];
-    NSLog(@"Opening image: %@", self.selectedImageURL);
-//    [self performSegueWithIdentifier:@"imageView" sender:self];
-//    ChatNYTPhoto .image .placeholderImage
-    
     UIImage *image = [message imageFromMediaFolder];
     ChatNYTPhoto *photo = [[ChatNYTPhoto alloc] init];
     photo.image = image;
@@ -298,16 +243,12 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 
 -(void)processTapOnTextMessage:(UIGestureRecognizer *)recognizer message:(ChatMessage *)message {
     if (![recognizer.view isKindOfClass:[UILabel class]]) {
-        NSLog(@"Error. recognizer.view is not UILabel for a message of type text.");
+        [ChatManager logError:@"Error. recognizer.view is not UILabel for a message of type text."];
         return;
     }
-    NSLog(@"Processing tap on Text message.");
     UILabel *label = (UILabel *)recognizer.view;
     CGPoint locationOfTouchInLabel = [recognizer locationInView:label];
     NSInteger indexOfCharacter = [self indexOfCharacterInLabel:label onTapPoint:locationOfTouchInLabel];
-    
-//    NSLog(@"INDEX: %ld", indexOfCharacter);
-    
     ChatMessageComponents *components = [self.rowComponents objectForKey:message.messageId];
     
     NSString *text = components.text;
@@ -320,11 +261,9 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     NSTextCheckingResult *selectedMatch = nil;
     NSString *selectedmatchType = nil;
     NSArray *urlsMatches = components.urlsMatches;
-//    NSLog(@"\"%@\"",[text substringWithRange:NSMakeRange(indexOfCharacter, 1)]);
     if (urlsMatches) {
         for (NSTextCheckingResult *match in urlsMatches) {
             if (NSLocationInRange(indexOfCharacter, match.range)) {
-                NSLog(@"Link tapped! location: %lu", (unsigned long)match.range.location);
                 selectedMatch = match;
                 selectedmatchType = MATCH_TYPE_URL;
                 NSString* link = [text substringWithRange:match.range];
@@ -342,7 +281,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     if (chatLinkMatches) {
         for (NSTextCheckingResult *match in chatLinkMatches) {
             if (NSLocationInRange(indexOfCharacter, match.range)) {
-                NSLog(@"Chat Link tapped!");
                 selectedMatch = match;
                 selectedmatchType = MATCH_TYPE_CHAT_LINK;
                 NSString* link = [components.text substringWithRange:match.range];
@@ -357,7 +295,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     
     if (selectedMatch) {
         if ([selectedmatchType isEqualToString:MATCH_TYPE_URL]) {
-            NSLog(@"Opening link menu for: %@", self.selectedHighlightLink);
             [self highlightTappedLinkWithTimeout:YES];
             [self performSegueWithIdentifier:@"webView" sender:self];
         }
@@ -397,10 +334,8 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     if (!self.selectedHighlightLabel) {
         return;
     }
-    NSLog(@"TAP5!");
     ChatStyles *styles = [ChatStyles sharedInstance];
     NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithAttributedString:self.selectedHighlightLabel.attributedText];
-    NSLog(@"TAP6!");
     UIColor *backgroundColor = [UIColor clearColor];
     UIColor *textColor;
     if (self.right_cell_hl) {
@@ -409,10 +344,8 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     else {
         textColor = styles.ballonLeftTextColor;
     }
-    NSLog(@"TAP7! %@", string);
     [string addAttribute:NSBackgroundColorAttributeName value:backgroundColor range:self.selectedHighlightRange];
     [string addAttribute:NSForegroundColorAttributeName value:textColor range:self.selectedHighlightRange];
-    NSLog(@"TAP9!");
     self.selectedHighlightLabel.attributedText = string;
 }
 
@@ -456,53 +389,29 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     UILabel *message_label = (UILabel *)[cell viewWithTag:10];
     self.selectedText = message_label.text;
     UIView *cell_background = (UIView *)[cell viewWithTag:50];
-    NSLog(@"label.text: %@", message_label.text);
     CGFloat abs_x = cell_background.frame.origin.x + cell.frame.origin.x + self.view.frame.origin.x; // l'ultimo è zero
     CGRect rectInTableView = [self.tableView rectForRowAtIndexPath:pressIndexPath];
     CGRect rectInSuperview = [self.tableView convertRect:rectInTableView toView:[self.tableView superview]];
     CGFloat abs_y = rectInSuperview.origin.y + cell_background.frame.origin.y;
-    NSLog(@"abs_y %f", abs_y);
     // absolute to view, not tableView
     CGRect absolute_to_view_rect = CGRectMake(abs_x, abs_y, message_label.frame.size.width, message_label.frame.size.height);
     // disable keyboard's gesture recognizer
     [self.vc dismissKeyboardFromTableView:NO];
     [[self popUpMenuForSelectedMessage] showInView:self.tableView targetRect:absolute_to_view_rect animated:YES];
-//    [self.popupMenu showInView:self.tableView targetRect:absolute_to_view_rect animated:YES];
-    // test
-    //    CGRect targetRect = absolute_to_view_rect;
-    //    UIView *targetV = [[UIView alloc] initWithFrame:targetRect];
-    //    [targetV setBackgroundColor:[UIColor blueColor]];
-    //    NSLog(@"VIEW %@", self.view);
-    //    NSLog(@"TABLEVIEW %@", self.tableView);
-    //    [self.view addSubview:targetV];
-    //    [self.view addSubview:targetV];
-    //    NSLog(@"frame %f %f %f %f", targetRect.origin.x, targetRect.origin.y, targetRect.size.width, targetRect.size.height);
-    //    CGRect targetRect2 = CGRectMake(44, 268, 100, 40);
-    //    UIView *targetV2 = [[UIView alloc] initWithFrame:targetRect2];
-    //    [targetV2 setBackgroundColor:[UIColor redColor]];
-    //    [self.tableView addSubview:targetV2];
-    // test end
 }
 
 -(void)setupMenuForSelectedLink {
-    //    NSLog(@"self.linkMenu %@", self.linkMenu);
-    //    NSLog(@"title: %@", self.selectedHighlightLink);
-    //    self.linkMenu.title = self.selectedHighlightLink;
-    
     UIAlertController * view=   [UIAlertController
                                  alertControllerWithTitle:nil
                                  message:self.selectedHighlightLink
                                  preferredStyle:UIAlertControllerStyleActionSheet];
-    
     UIAlertAction* copy = [UIAlertAction
                            actionWithTitle:[ChatLocal translate:COPY_LINK_KEY]
                            style:UIAlertActionStyleDefault
                            handler:^(UIAlertAction * action)
                            {
-                               NSLog(@"Copy link");
                                UIPasteboard *generalPasteboard = [UIPasteboard generalPasteboard];
                                generalPasteboard.string = self.selectedHighlightLink;
-                               NSLog(@"Link copied!");
                                [self unhighlightTappedLink];
                            }];
     UIAlertAction* open = [UIAlertAction
@@ -510,7 +419,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
                            style:UIAlertActionStyleDefault
                            handler:^(UIAlertAction * action)
                            {
-                               NSLog(@"Open link in browser");
                                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.selectedHighlightLink]];
                                [self unhighlightTappedLink];
                            }];
@@ -529,7 +437,7 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
     [self presentViewController:view animated:YES completion:nil];
 }
 
-///////////// FINE POPUPMENU ////////////
+// ***** FINE POPUPMENU *****
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -595,7 +503,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     float cell_height = cell.contentView.frame.size.height;
-    //    NSLog(@"Caching row at index: %ld height: %f", indexPath.row, cell_height);
     [self.rowHeights setObject:@(cell_height) forKey:@(indexPath.row)];
 }
 
@@ -681,9 +588,7 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 //                return cell;
             }
             else {
-                NSLog(@"rendering text message %@", message.text);
                 ChatTextMessageLeftCell *cell = [tableView dequeueReusableCellWithIdentifier:cellMessageLeft forIndexPath:indexPath];
-//                NSLog(@"cell class: %@", NSStringFromClass([cell class]));
                 [cell configure:message messages:messages indexPath:indexPath viewController:self rowComponents:self.rowComponents];
                 return cell;
             }
@@ -693,11 +598,11 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 }
 
 - (void)downloadImage:(ChatMessage *)message onIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"Downloading image: %@", message.imageURL);
+    [ChatManager logDebug:@"Downloading image: %@", message.imageURL];
     ChatMessagesTVC * __weak weakSelf = self;
     [self.conversationHandler.imageDownloader downloadImage:message onIndexPath:indexPath completionHandler:^(NSIndexPath * indexPath, UIImage *image, NSError *error) {
         if (error) {
-            NSLog(@"Image downloaded with error. %@", [error localizedDescription]);
+            [ChatManager logError:@"Image downloaded with error. %@", [error localizedDescription]];
         }
         ChatMessagesTVC *strongSelf = weakSelf;
         if (strongSelf == nil) {
@@ -724,18 +629,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 }
 
 -(void)messageUpdated:(ChatMessage *)message {
-    // TODO
-    // all this stuff on ContainerTVC
-    // indexPathMessage = [self findIndexPathForMessage:message];
-    // indexes = [self.tableView indexPathsForVisibleRows];
-    // if (indexPathMessage <= indexes.row.max && indexPathMessage >= indexes.row.min)
-    //      if ([self isIndexPathVisible:indexPath]) {
-    //      ChatImageMessageRightCell *updateCell = (id)[self.tableView cellForRowAtIndexPath:indexPath];
-    //      if (updateCell) {
-    //            [self.tableView beginUpdates];
-    //            updateCell.messageImageView.image = image;
-    //            [self.tableView endUpdates];
-    //      }
     [self reloadDataTableView];
 }
 
@@ -750,7 +643,6 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 
 -(void)analyzeMessageText:(ChatMessage *)message {
     // TEST URLs
-//    NSLog(@"Text: %@", message.text);
     NSString *text = message.text;
     if (!text) {
         text = @""; // TEST CAN'T BE NIL!!!!
@@ -775,37 +667,20 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 //    NSLog(@"ESTRAGGO LINK CHAT");
     NSError *error_chat;
     NSRegularExpression *regex_chat = [NSRegularExpression regularExpressionWithPattern:@"(chat://)([a-zA-Z0-9_])+" options:NSRegularExpressionCaseInsensitive error:&error_chat];
-    
-//    NSString *_text = message.text; //@"andrea qui: chat:antonio e qui: chat:mario_fino0 fine";
-//    NSLog(@"analizzo il testo: %@", _text);
     NSArray *_arrayOfAllMatches = [regex_chat matchesInString:text options:0 range:NSMakeRange(0, [text length])];
-//    NSLog(@"match trovati: %@", _arrayOfAllMatches);
     if (_arrayOfAllMatches) {
         components.chatLinkMatches = _arrayOfAllMatches;
     }
-    
-    //    // TEST
-    //    NSLog(@"Text analysis for message: %@ on row: %ld", message.text, indexPath.row);
-    //    for (NSTextCheckingResult *match in arrayOfAllMatches) {
-    //        NSString* substringForMatch = [text substringWithRange:match.range];
-    //        NSLog(@"Extracted URL: %@ in pos start:%ld end:%ld",substringForMatch, match.range.location, match.range.location + match.range.length);
-    //    }
-    
     [self.rowComponents setObject:components forKey:message.messageId];
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    NSLog(@"prepareForSegue: %@",segue.identifier);
     if ([segue.identifier isEqualToString:@"webView"]) {
         ChatMiniBrowserVC *vc = (ChatMiniBrowserVC *)[segue destinationViewController];
         vc.hiddenToolBar = YES;
         vc.titlePage = @"";
         vc.urlPage = self.selectedHighlightLink;
     }
-//    if ([segue.identifier isEqualToString:@"imageView"]) {
-//        ChatImageBrowserVC *vc = (ChatImageBrowserVC *)[segue destinationViewController];
-//        vc.imageURL = self.selectedImageURL;
-//    }
     else if ([segue.identifier isEqualToString:@"info"]) {
         ChatInfoMessageTVC *vc = (ChatInfoMessageTVC *)[segue destinationViewController];
         vc.message = self.selectedMessage;
@@ -813,7 +688,7 @@ static NSString *MATCH_TYPE_CHAT_LINK = @"CHATLINK";
 }
 
 -(void)dealloc {
-    NSLog(@"DEALLOCATING: ChatMessagesTVC.");
+    [ChatManager logDebug:@"DEALLOCATING: ChatMessagesTVC."];
 }
 
 @end

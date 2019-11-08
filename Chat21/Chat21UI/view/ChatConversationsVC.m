@@ -72,8 +72,15 @@
     
     UIBarButtonItem *archived_button = [[UIBarButtonItem alloc] initWithImage:archived_image style:UIBarButtonItemStylePlain target:self action:@selector(archived_action:)];
     UIBarButtonItem *write_to_button = [[UIBarButtonItem alloc] initWithImage:write_to_image style:UIBarButtonItemStylePlain target:self action:@selector(write_to_action:)];
+    NSMutableArray *bar_button_items = [[NSMutableArray alloc] init];
+    if ([ChatManager getInstance].showWriteTo) {
+        [bar_button_items addObject:write_to_button];
+    }
+    if ([ChatManager getInstance].showArchived) {
+        [bar_button_items addObject:archived_button];
+    }
+    self.navigationItem.rightBarButtonItems = bar_button_items; //@[write_to_button, archived_button];
     
-    self.navigationItem.rightBarButtonItems = @[write_to_button, archived_button];
     performSelectedConversationOnAppear = NO;
     
     [self.tableView registerNib:[UINib nibWithNibName:@"dm_conversation_cell" bundle:nil] forCellReuseIdentifier:@"conversationDMCell"];

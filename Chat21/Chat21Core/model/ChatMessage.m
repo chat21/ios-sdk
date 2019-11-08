@@ -9,6 +9,7 @@
 #import "ChatMessage.h"
 #import "ChatMessageMetadata.h"
 #import "ChatConversationHandler.h"
+#import "ChatManager.h"
 
 @implementation ChatMessage
 
@@ -68,19 +69,16 @@
 
 -(NSString *)imagePathFromMediaFolder {
     NSString *mediaFolderPath = [ChatConversationHandler mediaFolderPathOfRecipient:self.recipient];
-    NSLog(@"mediaFolderPath: %@",mediaFolderPath);
+    [ChatManager logDebug:@"mediaFolderPath: %@",mediaFolderPath];
     NSString *imagePath = [mediaFolderPath stringByAppendingPathComponent:self.imageFilename];
-    NSLog(@"imagePath: %@",imagePath);
+    [ChatManager logDebug:@"imagePath: %@",imagePath];
     return imagePath;
 }
 
 -(UIImage *)imageFromMediaFolder {
     NSString *imagePath = [self imagePathFromMediaFolder];
-//    NSLog(@"imagePath: %@", imagePath);
     UIImage *image = [UIImage imageNamed:imagePath];
     return image;
-//    NSDictionary *dict = [[NSMutableDictionary alloc] init];
-//    dict[]
 }
 
 -(UIImage *)imagePlaceholder {
@@ -89,7 +87,6 @@
 }
 
 -(NSDictionary *)snapshot {
-//    if (!_snapshot) {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     data[MSG_FIELD_SENDER] = self.sender;
     data[MSG_FIELD_SENDER_FULLNAME] = self.senderFullname;
@@ -97,9 +94,7 @@
     data[MSG_FIELD_RECIPIENT_FULLNAME] = self.recipientFullName;
     data[MSG_FIELD_CHANNEL_TYPE] = self.channel_type;
     data[MSG_FIELD_LANG] = self.lang;
-//    NSLog(@"time original: %@", self.date);
     long long milliseconds = (long long)([self.date timeIntervalSince1970] * 1000.0);
-//    NSLog(@"time converted millis: %lld", milliseconds);
     data[MSG_FIELD_TIMESTAMP] = @(milliseconds);
     data[MSG_FIELD_STATUS] = @(self.status);
     data[MSG_FIELD_TYPE] = self.mtype;
@@ -107,7 +102,6 @@
     data[MSG_FIELD_METADATA] = self.metadata.asDictionary;
     data[MSG_FIELD_ATTRIBUTES] = self.attributes;
     _snapshot = data;
-//    }
     return _snapshot;
 }
 
@@ -117,26 +111,12 @@
         NSError * err;
         NSData * jsonData = [NSJSONSerialization dataWithJSONObject:self.snapshot options:0 error:&err];
         if (err) {
-            NSLog(@"Error: %@", err);
+            [ChatManager logError:@"Error: %@", err];
         }
         json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
     return json;
 }
-
-//-(NSString *)attributesAsJSONString {
-//    NSString * json = nil;
-////    NSLog(@"valid json? %d", [NSJSONSerialization isValidJSONObject:self.attributes]);
-//    if (self.attributes && [self.attributes isKindOfClass:[NSDictionary class]]) {
-//        NSError * err;
-//        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:self.attributes options:0 error:&err];
-//        if (err) {
-//            NSLog(@"Error: %@", err);
-//        }
-//        json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//    }
-//    return json;
-//}
 
 -(NSString *)dateFormattedForListView {
     NSDateFormatter *timeFormat = [[NSDateFormatter alloc] init];
@@ -186,8 +166,6 @@
         }
     }
     [message setCorrectText:message text:text];
-//    message.text = text;
-    
     message.lang = lang;
     message.subtype = subtype;
     if ([message.mtype isEqualToString:MSG_TYPE_IMAGE]) {
@@ -208,7 +186,6 @@
 }
 
 -(void)setCorrectText:(ChatMessage *)message text:(NSString *)text {
-//    NSLog(@"setting text for: %@", message.text);
     // text validation
     if (!text) { // never nil
         text = @"";
@@ -235,12 +212,6 @@
         [message_dict setObject:self.senderFullname forKey:MSG_FIELD_SENDER_FULLNAME];
     }
     
-    // TEMPORARY
-//    NSLog(@"recpient_id: %@", self.recipient);
-//    if ([self.recipient isEqualToString:@"bot_5b439b28e10db0001461d992"]) {
-//        [message_dict setObject:@"5b439a78e10db0001461d98f" forKey:@"projectid"];
-//    }
-//
     if (self.subtype) {
         [message_dict setObject:self.subtype forKey:MSG_FIELD_SUBTYPE];
     }
@@ -275,11 +246,11 @@
     if (self.additionalRootProperties) {
         for(NSString *key in self.additionalRootProperties) {
             NSString *value = [self.additionalRootProperties objectForKey:key];
-            NSLog(@"found root property: key=%@ value=%@", key, value);
+            [ChatManager logDebug:@"found root property: key=%@ value=%@", key, value];
             [message_dict setObject:value forKey:key];
         }
     } else {
-        NSLog(@"No additional root properties were found.");
+        [ChatManager logDebug:@"No additional root properties were found."];
     }
     return message_dict;
 }

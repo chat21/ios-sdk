@@ -65,8 +65,6 @@
     
     [self setupLabels];
     [self buildUnreadBadge];
-    
-    //    self.group.name = nil; // TEST DOWNLOAD GRUPPO METADATI PARZIALI
     if (self.recipient) { // online status only in DM mode
         [self setupForDirectMessageModeWithCompletion:^{
             [self setContainer];
@@ -78,9 +76,8 @@
         }];
     }
     else {
-        NSLog(@"Error: impossible configuration! No Group and no recipient!");
+        [ChatManager logError:@"Error: impossible configuration! No Group and no recipient!"];
     }
-    
     if (self.isModal) {
         UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelAction)];
         [self.navigationItem setLeftBarButtonItem:leftBarButton];
@@ -94,19 +91,19 @@
 }
 
 -(BOOL)ImInGroup {
-    NSLog(@"can I write in this group?");
+    [ChatManager logDebug:@"can I write in this group?"];
     if (!self.group) {
-        NSLog(@"No group. NO");
+        [ChatManager logDebug:@"Ehmmm ... no group!"];
         return NO;
     }
     NSDictionary *members = self.group.members;
     NSString *user_found = [members objectForKey:self.me.userId];
     if (user_found) {
-        NSLog(@"YES, you can write in this group.");
+        [ChatManager logDebug:@"YES, you can write in this group."];
         return YES;
     }
     else {
-        NSLog(@"NO, you can't write in this group.");
+        [ChatManager logDebug:@"NO, you can't write in this group."];
         return NO;
     }
 }
@@ -143,11 +140,11 @@
 
 -(void)hideBottomView:(BOOL)hide {
     if (hide) {
-        NSLog(@"Hide write box");
+        [ChatManager logDebug:@"Hide write box"];
         self.bottomView.hidden = YES;
         self.bottomViewHeightConstraint.constant = 0.0;
     } else {
-        NSLog(@"Show write box");
+        [ChatManager logDebug:@"Show write box"];
         self.bottomView.hidden = NO;
         self.bottomViewHeightConstraint.constant = 44.0;
     }
@@ -572,7 +569,7 @@
     }
     NSString *text = [NSString stringWithFormat:@"%@ %@", name, link];
     [self.conversationHandler sendTextMessage:text subtype:MSG_TYPE_DROPBOX attributes:attributes completion:^(ChatMessage *message, NSError *error) {
-        NSLog(@"Message %@ successfully sent. ID: %@", message.text, message.messageId);
+        [ChatManager logDebug:@"Message %@ successfully sent. ID: %@", message.text, message.messageId];
     }];
 //    [self.conversationHandler sendMessageWithText:text type:MSG_TYPE_DROPBOX attributes:attributes];
 }
@@ -603,10 +600,7 @@
 
 -(void)keyboardWasShown:(NSNotification*)aNotification
 {
-    NSLog(@"Keyboard was shown %ld",(long)self.messageTextField.autocorrectionType);
     if(keyboardShow == NO){
-        NSLog(@"KEYBOARD-SHOW == NO!");
-        //CGFloat content_h = self.tableView.contentSize.height;
         NSDictionary* info = [aNotification userInfo];
         NSTimeInterval animationDuration;
         UIViewAnimationCurve animationCurve;
@@ -703,7 +697,6 @@
 }
 
 - (IBAction)sendAction:(id)sender {
-    NSLog(@"sendAction()");
     NSString *text = self.messageTextField.text;
     [self sendMessage:text];
 }
@@ -750,7 +743,7 @@ int messageCount = 0;
                               [NSCharacterSet whitespaceCharacterSet]];
     if(trimmed_text.length > 0) {
         [self.conversationHandler sendTextMessage:text subtype:nil attributes:attributes completion:^(ChatMessage *message, NSError *error) {
-            NSLog(@"Message %@ successfully sent. ID: %@", message.text, message.messageId);
+            [ChatManager logDebug:@"Message %@ successfully sent. ID: %@", message.text, message.messageId];
         }];
         self.messageTextField.text = @"";
     }
@@ -777,7 +770,7 @@ int messageCount = 0;
 //        [self playSound];
     }
     else {
-        NSLog(@"MESSAGES STILL ARRIVING, NOT RENDERING!");
+        [ChatManager logDebug:@"MESSAGES STILL ARRIVING, NOT RENDERING!"];
     }
 }
 
@@ -792,7 +785,7 @@ static float messageTime = 0.5;
 }
 
 -(void)endNewMessageTimer {
-    NSLog(@"END RECEIVING MESSAGES. RENDERING.");
+    [ChatManager logDebug:@"END RECEIVING MESSAGES. RENDERING."];
     [self.messageTimer invalidate];
     self.messageTimer = nil;
     self.messagesArriving = NO;
@@ -871,13 +864,10 @@ static float messageTime = 0.5;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"GroupInfo"]) {
         ChatGroupInfoVC *vc = (ChatGroupInfoVC *)[segue destinationViewController];
-        NSLog(@"vc %@", vc);
-        //        vc.applicationContext = self.applicationContext;
         vc.group = self.group;
     }
     else if ([[segue identifier] isEqualToString:@"imagePreview"]) {
         ChatImagePreviewVC *vc = (ChatImagePreviewVC *)[segue destinationViewController];
-        NSLog(@"vc %@", vc);
         vc.image = self.scaledImage;
         if (self.recipient) {
             vc.recipientFullname = self.recipient.fullname;

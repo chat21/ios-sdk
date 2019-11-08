@@ -49,15 +49,12 @@
 
 -(UITableViewCell *)configureGroupConversationCell:(ChatConversation *)conversation indexPath:(NSIndexPath *)indexPath {
     
-    //    NSLog(@"Configuring group cell.");
-//    NSString *groupId = conversation.recipient;
-//    ChatGroup *group = [[ChatManager getInstance] groupById:groupId];
-    
     NSString *me = [ChatManager getInstance].loggedUser.userId;
     ChatGroupConversationCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"conversationGroupCell" forIndexPath:indexPath];
     cell.conversation = conversation;
     UILabel *subject_label = cell.subjectLabel; //(UILabel *)[cell viewWithTag:2];
     UILabel *info_message_label = cell.infoMessageLabel; //(UILabel *)[cell viewWithTag:3];
+//    UILabel *last_message_label = cell.lastGroupMessageLabel; //cell.lastMessageLabel; //(UILabel *)[cell viewWithTag:22];
     UILabel *last_message_label = cell.lastMessageLabel; //(UILabel *)[cell viewWithTag:22];
     UILabel *sender_label = cell.senderLabel; //(UILabel *)[cell viewWithTag:20];
     UIImageView *new_messages_icon = cell.is_newMessageIcon; //(UIImageView *)[cell viewWithTag:50];
@@ -105,12 +102,12 @@
         new_messages_icon.hidden = NO;
     }
     else {
-        // NORMAL STYLE
+//        // NORMAL STYLE
         subject_label.font = [UIFont systemFontOfSize:subject_label.font.pointSize];
-        // CONV_STATUS_JUST_CREATED
+//        // CONV_STATUS_JUST_CREATED
         info_message_label.textColor = styles.infoMessageTextColor;
         info_message_label.font = [UIFont systemFontOfSize:info_message_label.font.pointSize];
-        // CONV_STATUS_LAST_MESSAGE
+//        // CONV_STATUS_LAST_MESSAGE
         last_message_label.textColor = styles.lastMessageTextColor;
         last_message_label.font = [UIFont systemFontOfSize:info_message_label.font.pointSize];
         new_messages_icon.hidden = YES;
@@ -156,7 +153,6 @@
     UIImageView *new_messages_icon = cell.is_newMessageIcon; //(UIImageView *)[cell viewWithTag:50];
     UILabel *date_label = cell.dateLabel; //(UILabel *)[cell viewWithTag:4];
     subject_label.text = conversation.conversWith_fullname ? conversation.conversWith_fullname : conversation.conversWith;
-    NSLog(@"Rendering conversation with %@", subject_label.text);
     last_message_label.hidden = NO;
     last_message_label.text = [conversation textForLastMessage:me];
     UIImageView *profileImageView = cell.profileImageView;
@@ -177,7 +173,6 @@
         last_message_label.font = [UIFont systemFontOfSize:last_message_label.font.pointSize];
         new_messages_icon.hidden = YES;
     }
-    NSLog(@"rendering: %@ - %d", [conversation textForLastMessage:me], conversation.archived);
     [CellConfigurator archiveLabel:cell archived:conversation.archived];
     return cell;
 }

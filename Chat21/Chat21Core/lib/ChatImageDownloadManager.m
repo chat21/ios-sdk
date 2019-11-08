@@ -9,6 +9,7 @@
 #import "ChatImageDownloadManager.h"
 #import "ChatMessage.h"
 #import "ChatImageCache.h"
+#import "ChatManager.h"
 
 @implementation ChatImageDownloadManager
 
@@ -23,23 +24,23 @@
 - (void)downloadImage:(ChatMessage *)message onIndexPath:(NSIndexPath *)indexPath completionHandler:(void(^)(NSIndexPath* indexPath, UIImage *image, NSError *error))callback {
     NSURLSessionDataTask *currentTask = [self.tasks objectForKey:message.messageId];
     if (currentTask) {
-        NSLog(@"Image %@ already downloading (messageId: %@).", message.imageURL, message.messageId);
+        [ChatManager logDebug:@"Image %@ already downloading (messageId: %@).", message.imageURL, message.messageId];
         return;
     }
     NSURLSessionConfiguration *_config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *_session = [NSURLSession sessionWithConfiguration:_config];
     NSURL *url = [NSURL URLWithString:message.imageURL];
-    NSLog(@"Downloading image. URL: %@", message.imageURL);
+    [ChatManager logDebug:@"Downloading image. URL: %@", message.imageURL];
     if (!url) {
-        NSLog(@"ERROR - Can't download image, URL is null");
+        [ChatManager logDebug:@"ERROR - Can't download image, URL is null"];
         return;
     }
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"Image downloaded: %@", message.imageURL);
+        [ChatManager logDebug:@"Image downloaded: %@", message.imageURL];
         [self.tasks removeObjectForKey:message.messageId];
         if (error) {
-            NSLog(@"%@", error);
+            [ChatManager logDebug:@"%@", error];
             callback(indexPath, nil, error);
             return;
         }
@@ -49,11 +50,11 @@
             if (image) {
                 NSData* imageData = [NSData dataWithData:UIImagePNGRepresentation(image)];
                 NSString *path = [message imagePathFromMediaFolder];
-                NSLog(@"Saving image to: %@", path);
+                [ChatManager logDebug:@"Saving image to: %@", path];
                 NSError *writeError = nil;
                 [message createMediaFolderPathIfNotExists];
                 if(![imageData writeToFile:path options:NSDataWritingAtomic error:&writeError]) {
-                    NSLog(@"%@: Error saving image: %@", [self class], [writeError localizedDescription]);
+                    [ChatManager logDebug:@"%@: Error saving image: %@", [self class], [writeError localizedDescription]];
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
                     callback(indexPath, image, nil);

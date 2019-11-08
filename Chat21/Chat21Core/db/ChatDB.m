@@ -296,11 +296,9 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
                 [messages addObject:message];
             }
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         } else {
             [ChatManager logError:@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database)];
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         }
     }
     sqlite3_close(database);
@@ -329,11 +327,9 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
                 [messages addObject:message];
             }
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         } else {
             [ChatManager logError:@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database)];
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         }
     }
     sqlite3_close(database);
@@ -367,11 +363,9 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
                 message = [self messageFromStatement:statement];
             }
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         } else {
             [ChatManager logDebug:@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database)];
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         }
     }
     sqlite3_close(database);
@@ -583,7 +577,6 @@ static NSString *SELECT_FROM_MESSAGES_STATEMENT = @"select messageId, conversati
         if (sqlite3_step(statement) == SQLITE_DONE) {
             sqlite3_finalize(statement);
             sqlite3_close(database);
-//            [self printAllConversations:@"cQ1jxD2SBzROcpBJtMKGepbk3bw1"];
             return YES;
         }
         else {
@@ -611,11 +604,9 @@ static NSString *SELECT_FROM_CONVERSATIONS_STATEMENT = @"SELECT conversationId, 
                 [convs addObject:conv];
             }
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         } else {
             [ChatManager logDebug:@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database)];
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         }
     }
     sqlite3_close(database);
@@ -637,25 +628,14 @@ static NSString *SELECT_FROM_CONVERSATIONS_STATEMENT = @"SELECT conversationId, 
                 [convs addObject:conv];
             }
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         } else {
             [ChatManager logError:@"Database returned error %d: %s", sqlite3_errcode(database), sqlite3_errmsg(database)];
             sqlite3_finalize(statement);
-            sqlite3_close(database);
         }
     }
     sqlite3_close(database);
     return convs;
 }
-
-//-(void)printAllConversations:(NSString *)user {
-//    NSLog(@"***** CONVERSATIONS DUMP **************************");
-//    NSMutableArray *conversations = [[[ChatDB getSharedInstance] getAllConversationsForUser:user archived:NO limit:60] mutableCopy];
-//    for (ChatConversation *c in conversations) {
-//        NSLog(@"text: %@, id: %@, user: %@ date: %@",c.last_message_text, c.conversationId, c.user, c.date);
-//    }
-//    NSLog(@"******************************* END.");
-//}
 
 - (void)getConversationByIdSynchronized:(NSString *)conversationId completion:(void(^)(ChatConversation *)) callback {
     dispatch_async(serialDatabaseQueue, ^{

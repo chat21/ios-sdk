@@ -35,7 +35,6 @@
 
 -(void)tapReceived:(UITapGestureRecognizer *)tapGestureRecognizer
 {
-    NSLog(@".......TAPPED!!!");
     [self.popupMenu dismissAnimated:YES];
 }
 

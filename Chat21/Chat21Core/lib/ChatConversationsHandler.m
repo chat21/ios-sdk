@@ -46,15 +46,6 @@
     self.conversations_ref_handle_removed = 0;
 }
 
-//-(void)printAllConversations {
-//    NSLog(@"***** CONVERSATIONS DUMP **************************");
-//    NSMutableArray *conversations = [[[ChatDB getSharedInstance] getAllConversations] mutableCopy];
-//    for (ChatConversation *c in conversations) {
-//        NSLog(@"id: %@, user: %@ date: %@",c.conversationId, c.user, c.date);
-//    }
-//    NSLog(@"******************************* END.");
-//}
-
 -(void)restoreConversationsFromDB {
     self.conversations = [[[ChatDB getSharedInstance] getAllConversationsForUser:self.me archived:NO limit:0] mutableCopy];
     self.archivedConversations = [[[ChatDB getSharedInstance] getAllConversationsForUser:self.me archived:YES limit:150] mutableCopy];
@@ -87,10 +78,10 @@
     self.conversations_ref_handle_added = [[[self.conversationsRef queryOrderedByChild:@"timestamp"]
                                              queryStartingAtValue:@(lasttime)]
                                              observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"NEW CONVERSATION SNAPSHOT: %@", snapshot);
+        [ChatManager logDebug:@"NEW CONVERSATION SNAPSHOT: %@", snapshot];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             if (![self isValidConversationSnapshot:snapshot]) {
-                NSLog(@"Invalid conversation snapshot, discarding.");
+                [ChatManager logDebug:@"Invalid conversation snapshot, discarding."];
                 return;
             }
             
@@ -107,7 +98,7 @@
                 // changes (forces) the "is_new" flag to FALSE;
                 conversation.is_new = NO;
                 FIRDatabaseReference *conversation_ref = [self.conversationsRef child:conversation.conversationId];
-                NSLog(@"UPDATING IS_NEW=NO FOR CONVERSATION %@", conversation_ref);
+                [ChatManager logDebug:@"UPDATING IS_NEW=NO FOR CONVERSATION %@", conversation_ref];
                 [chatm updateConversationIsNew:conversation_ref is_new:conversation.is_new];
             }
             conversation.archived = NO;
@@ -118,18 +109,18 @@
             }];
         });
     } withCancelBlock:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [ChatManager logDebug:@"%@", error.description];
     }];
     
     self.conversations_ref_handle_changed = [[self.conversationsRef  queryOrderedByChild:@"timestamp"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"CHANGED CONVERSATION snapshot............... %@", snapshot);
+        [ChatManager logDebug:@"CHANGED CONVERSATION SNAPSHOT: %@", snapshot];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             ChatConversation *conversation = [ChatConversation conversationFromSnapshotFactory:snapshot me:self.loggeduser];
             ChatManager *chatm = [ChatManager getInstance];
             if (chatm.onCoversationUpdated) {
                 conversation = chatm.onCoversationUpdated(conversation);
                 if (conversation == nil) {
-                    NSLog(@"Handler returned null Conversation. Stopping pipeline.");
+                    [ChatManager logDebug:@"Handler returned null Conversation. Stopping pipeline."];
                     return;
                 }
             }
@@ -138,7 +129,7 @@
                 // changes (forces) the "is_new" flag to FALSE;
                 conversation.is_new = NO;
                 FIRDatabaseReference *conversation_ref = [self.conversationsRef child:conversation.conversationId];
-                NSLog(@"UPDATING IS_NEW=NO FOR CONVERSATION %@", conversation_ref);
+                [ChatManager logDebug:@"UPDATING IS_NEW=NO FOR CONVERSATION %@", conversation_ref];
                 [chatm updateConversationIsNew:conversation_ref is_new:conversation.is_new];
             }
             conversation.archived = NO;
@@ -163,12 +154,12 @@
             }];
         });
     } withCancelBlock:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [ChatManager logDebug:@"%@", error.description];
     }];
     
     self.conversations_ref_handle_removed =
     [self.conversationsRef observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"REMOVED CONVERSATION snapshot............... %@", snapshot);
+        [ChatManager logDebug:@"REMOVED CONVERSATION SNAPSHOT: %@", snapshot];
         ChatConversation *conversation = [ChatConversation conversationFromSnapshotFactory:snapshot me:self.loggeduser];
         [self removeConversationOnDB:conversation completion:^{
             [self removeConversationInMemory:conversation completion:^{
@@ -176,16 +167,9 @@
             }];
         }];
     } withCancelBlock:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [ChatManager logDebug:@"%@", error.description];
     }];
 }
-
-//-(void)startConversationMessagesHandler:(ChatConversation *)conversation {
-//    ChatManager *chatm = [ChatManager getInstance];
-//    if (conversation.is_new) {
-//        [chatm startConversationHandler:conversation];
-//    }
-//}
 
 -(NSDictionary *)findConversationInMemoryById:(NSString *)conversationId {
     for (int i = 0; i < self.conversations.count; i++) {
@@ -220,9 +204,9 @@
     }
     
     self.archived_conversations_ref_handle_added = [[[self.archivedConversationsRef queryOrderedByChild:@"timestamp"] queryStartingAtValue:@(lasttime)] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"NEW ARCHIVED CONVERSATION SNAPSHOT: %@", snapshot);
+        [ChatManager logDebug:@"NEW ARCHIVED CONVERSATION SNAPSHOT: %@", snapshot];
         if (![self isValidConversationSnapshot:snapshot]) {
-            NSLog(@"Invalid conversation snapshot, discarding.");
+            [ChatManager logDebug:@"Invalid conversation snapshot, discarding."];
             return;
         }
         ChatConversation *conversation = [ChatConversation conversationFromSnapshotFactory:snapshot me:self.loggeduser];
@@ -239,53 +223,44 @@
             }];
         }];
     } withCancelBlock:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [ChatManager logDebug:@"%@", error.description];
     }];
 
     self.archived_conversations_ref_handle_removed =
     [self.archivedConversationsRef observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot *snapshot) {
-        NSLog(@"REMOVED ARCHIVED CONVERSATION snapshot............... %@", snapshot);
+        [ChatManager logDebug:@"REMOVED ARCHIVED CONVERSATION SNAPSHOT: %@", snapshot];
         ChatConversation *conversation = [ChatConversation conversationFromSnapshotFactory:snapshot me:self.loggeduser];
         [self unarchiveConversation:conversation completion:^{
             [self notifyEvent:ChatEventArchivedConversationRemoved conversation:conversation];
         }];
     } withCancelBlock:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [ChatManager logDebug:@"%@", error.description];
     }];
 }
 
 -(BOOL)isValidConversationSnapshot:(FIRDataSnapshot *)snapshot {
     if (snapshot.value[CONV_RECIPIENT_KEY] == nil) {
-        NSLog(@"CONV:RECIPIENT is mandatory. Discarding message.");
+        [ChatManager logDebug:@"CONV:RECIPIENT is mandatory. Discarding message."];
         return NO;
     }
     else if (snapshot.value[CONV_LAST_MESSAGE_TEXT_KEY] == nil) {
-        NSLog(@"CONV:TEXT is mandatory. Discarding message.");
+        [ChatManager logDebug:@"CONV:TEXT is mandatory. Discarding message."];
         return NO;
     }
     else if (snapshot.value[CONV_SENDER_KEY] == nil) {
-        NSLog(@"CONV:SENDER is mandatory. Discarding message.");
+        [ChatManager logDebug:@"CONV:SENDER is mandatory. Discarding message."];
         return NO;
     }
     else if (snapshot.value[CONV_TIMESTAMP_KEY] == nil) {
-        NSLog(@"MSG:TIMESTAMP is mandatory. Discarding message.");
+        [ChatManager logDebug:@"MSG:TIMESTAMP is mandatory. Discarding message."];
         return NO;
     }
     else if (snapshot.value[CONV_STATUS_KEY] == nil) {
-        NSLog(@"MSG:TIMESTAMP is mandatory. Discarding message.");
+        [ChatManager logDebug:@"MSG:TIMESTAMP is mandatory. Discarding message."];
         return NO;
     }
-    //    else if (snapshot.value[MSG_FIELD_STATUS] == nil) {
-    //        NSLog(@"MSG:STATUS is mandatory. Discarding message.");
-    //        return NO;
-    //    }
-    
     return YES;
 }
-
-//-(void)insertConversationOnDBIfNotExists:(ChatMessage *)message {
-//    [[ChatDB getSharedInstance] insertMessageIfNotExists:message];
-//}
 
 // MEMORY DB - CONVERSATIONS
 
@@ -310,18 +285,6 @@
     });
 }
 
-//-(void)insertConversationInMemory:(ChatConversation *)conversation {
-//    [self insertConversationInMemory:conversation fromConversations:self.conversations];
-//}
-//
-//-(void)updateConversationInMemory:(ChatConversation *)conversation {
-//    [self updateConversationInMemory:conversation fromConversations:self.conversations];
-//}
-//
-//-(int)removeConversationInMemory:(ChatConversation *)conversation {
-//    return [self removeConversationInMemory:conversation fromConversations:self.conversations];
-//}
-
 // MEMORY DB - ARCHIVED-CONVERSATIONS
 
 -(void)insertArchivedConversationInMemory:(ChatConversation *)conversation completion:(void(^)(void))callback {
@@ -345,25 +308,13 @@
     });
 }
 
-//-(void)insertArchivedConversationInMemory:(ChatConversation *)conversation {
-//    [self insertConversationInMemory:conversation fromConversations:self.archivedConversations];
-//}
-//
-//-(void)updateArchivedConversationInMemory:(ChatConversation *)conversation {
-//    [self updateConversationInMemory:conversation fromConversations:self.archivedConversations];
-//}
-//
-//-(int)removeArchivedConversationInMemory:(ChatConversation *)conversation {
-//    return [self removeConversationInMemory:conversation fromConversations:self.archivedConversations];
-//}
-
 // MEMORY DB
 
 -(void)insertConversationInMemory:(ChatConversation *)conversation fromConversations:(NSMutableArray<ChatConversation *> *)conversations {
     for (int i = 0; i < conversations.count; i++) {
         ChatConversation *conv = conversations[i];
         if([conv.conversationId isEqualToString: conversation.conversationId]) {
-            NSLog(@"conv found, updating");
+            [ChatManager logDebug:@"conv found, updating"];
             [conversations removeObjectAtIndex:i]; // remove conversation...
             [conversations insertObject:conversation atIndex:0]; // ...then put it on top
             return;
@@ -376,7 +327,6 @@
     for (int i = 0; i < conversations.count; i++) {
         ChatConversation *conv = conversations[i];
         if([conv.conversationId isEqualToString: conversation.conversationId]) {
-            NSLog(@"conv found, date new conv: %@, date old conv: %@", conversation.date, conv.date);
             if ([conv.date isEqualToDate:conversation.date]) {
                 conversations[i] = conversation; // replace conversation in the same position
                 return;

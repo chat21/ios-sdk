@@ -36,7 +36,7 @@ static ChatDiskImageCache *sharedInstance = nil;
 }
 
 -(void)addImageToCache:(UIImage *)image withKey:(NSString *)key {
-    NSLog(@"adding for key: %@", key);
+    [ChatManager logDebug:@"adding for key: %@", key];
     if (key == nil || image == nil) {
         return;
     }
@@ -46,7 +46,7 @@ static ChatDiskImageCache *sharedInstance = nil;
 }
 
 -(void)addImageToMemoryCache:(UIImage *)image withKey:(NSString *)key {
-    NSLog(@"adding to memory for key: %@", key);
+    [ChatManager logDebug:@"adding to memory for key: %@", key];
     if (key == nil || image == nil) {
         return;
     }
@@ -67,26 +67,19 @@ static ChatDiskImageCache *sharedInstance = nil;
 
 -(void)deleteFilesFromCacheStartingWith:(NSString *)partial_key {
     NSString *folder_path = [ChatUtil absoluteFolderPath:self.cacheFolder]; // cache folder path
-    NSLog(@"deleting files at folder path: %@ starting with: %@", folder_path, partial_key);
+    [ChatManager logDebug:@"deleting files at folder path: %@ starting with: %@", folder_path, partial_key];
     NSFileManager *filemgr = [NSFileManager defaultManager];
     NSArray *directoryList = [filemgr contentsOfDirectoryAtPath:folder_path error:nil];
     for (NSString *filename in directoryList) {
         if ([filename hasPrefix:partial_key]) {
-            NSLog(@"Inizia con partial_key: %@", filename);
             NSString *file_path = [folder_path stringByAppendingPathComponent:filename];
-            NSLog(@"file_path to delete: %@", file_path);
             NSError *error;
             [filemgr removeItemAtPath:file_path error:&error];
             if (error) {
-                NSLog(@"Error removing file in cache path? (%@) - %@",file_path, error);
+                [ChatManager logError:@"Error removing file in cache path? (%@) - %@",file_path, error];
             }
         }
     }
-//        NSArray *directoryList2 = [filemgr contentsOfDirectoryAtPath:folder_path error:nil];
-//        for (id file in directoryList2) {
-//            NSLog(@"Image: %@", file);
-//        }
-//        NSLog(@"End list.");
 }
 
 -(UIImage *)getCachedImage:(NSString *)key {
@@ -98,7 +91,7 @@ static ChatDiskImageCache *sharedInstance = nil;
     if (size != 0) {
         sized_key = [ChatDiskImageCache sizedKey:key size:size];
     }
-    NSLog(@"sized_key %@", sized_key);
+    [ChatManager logDebug:@"sized_key %@", sized_key];
     [self deleteImageFromCacheWithKey:sized_key];
 }
 
@@ -140,26 +133,14 @@ static ChatDiskImageCache *sharedInstance = nil;
 +(UIImage *)loadImage:(NSString *)fileName inFolder:(NSString *)folderName {
     NSString *folder_path = [ChatUtil absoluteFolderPath:folderName]; // cache folder path
     
-//    NSFileManager *fileManager = [NSFileManager defaultManager];
-//    NSArray *directoryList = [fileManager contentsOfDirectoryAtPath:folder_path error:nil];
-//    for (id file in directoryList) {
-//        NSLog(@"Image: %@", file);
-//    }
-//    NSLog(@"End list.");
-    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *image_path = [folder_path stringByAppendingPathComponent:fileName];
-//    NSLog(@"image path to load: %@", image_path);
     BOOL fileExist = [fileManager fileExistsAtPath:image_path];
     UIImage *image;
     if (fileExist) {
-//        [fileManager removeItemAtPath:image_path error:NULL];
         NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:image_path error:nil];
-//        NSDate *creationDate = (NSDate*)[fileAttribs objectForKey:NSFileCreationDate];
         NSDate *modificationDate = (NSDate*)[fileAttribs objectForKey:NSFileModificationDate];
-//        NSLog(@"Creation date %@", creationDate);
-        NSLog(@"Modification date %@", modificationDate);
-        
+        [ChatManager logDebug:@"Modification date %@", modificationDate];
         image = [UIImage imageWithContentsOfFile:image_path];
     }
     return image;
@@ -169,32 +150,12 @@ static ChatDiskImageCache *sharedInstance = nil;
     NSString *folder_path = [ChatUtil absoluteFolderPath:folderName]; // cache folder path
     NSString *image_path = [folder_path stringByAppendingPathComponent:fileName];
     NSFileManager *filemgr = [NSFileManager defaultManager];
-    NSLog(@"Image path: %@", image_path);
     NSError *error;
     [filemgr removeItemAtPath:image_path error:&error];
     if (error) {
-        NSLog(@"Error removing image to cache path? (%@) - %@",image_path, error);
+        [ChatManager logDebug:@"Error removing image to cache path? (%@) - %@",image_path, error];
     }
-    // test
-    if ([filemgr fileExistsAtPath: image_path ] == NO) {
-        NSLog(@"Image deleted.");
-    }
-    else {
-        NSLog(@"Error deleting image.");
-    }
-//    NSArray *directoryList = [filemgr contentsOfDirectoryAtPath:folder_path error:nil];
-//    for (id file in directoryList) {
-//        NSLog(@"Image: %@", file);
-//    }
-//    NSLog(@"End list.");
 }
-
-//+(NSString *)absoluteFolderPath:(NSString *)folderName {
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    NSString *documentsDirectory = [paths objectAtIndex:0];
-//    NSString *path = [documentsDirectory stringByAppendingPathComponent:folderName];
-//    return path;
-//}
 
 - (NSURLSessionDataTask *)getImage:(NSString *)imageURL completionHandler:(void(^)(NSString *imageURL, UIImage *image))callback {
     return [self getImage:imageURL sized:0 circle:NO completionHandler:^(NSString *imageURL, UIImage *image) {
@@ -203,7 +164,7 @@ static ChatDiskImageCache *sharedInstance = nil;
 }
 
 - (NSURLSessionDataTask *)getImage:(NSString *)imageURL sized:(long)size circle:(BOOL)circle completionHandler:(void(^)(NSString *imageURL, UIImage *image))callback {
-    NSLog(@"Cache image url requested: %@", imageURL);
+    [ChatManager logDebug:@"Cache image url requested: %@", imageURL];
     NSURL *url = [NSURL URLWithString:imageURL];
     NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
     UIImage *image = [self getCachedImage:cache_key sized:size circle:circle];
@@ -213,14 +174,14 @@ static ChatDiskImageCache *sharedInstance = nil;
     }
     NSURLSessionDataTask *currentTask = [self.tasks objectForKey:imageURL];
     if (currentTask) {
-        NSLog(@"Image %@ already downloading.", imageURL);
+        [ChatManager logDebug:@"Image %@ already downloading.", imageURL];
         callback(imageURL, nil);
         return nil;
     }
     
-    NSLog(@"Downloading image. URL: %@", imageURL);
+    [ChatManager logDebug:@"Downloading image. URL: %@", imageURL];
     if (!url) {
-        NSLog(@"ERROR - Can't download image, URL is null");
+        [ChatManager logDebug:@"ERROR - Can't download image, URL is null"];
         callback(imageURL, nil);
         return nil;
     }
@@ -229,10 +190,10 @@ static ChatDiskImageCache *sharedInstance = nil;
     NSURLSession *_session = [NSURLSession sessionWithConfiguration:_config];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"Image downloaded: %@", imageURL);
+        [ChatManager logDebug:@"Image downloaded: %@", imageURL];
         [self.tasks removeObjectForKey:imageURL];
         if (error) {
-            NSLog(@"ERRORR: %@ > %@", imageURL, error);
+            [ChatManager logError:@"ERRORR: %@ > %@", imageURL, error];
             callback(imageURL, nil);
             return;
         }
@@ -272,7 +233,7 @@ static ChatDiskImageCache *sharedInstance = nil;
     NSString *imageKey = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:imageURL]];
     [self addImageToCache:image withKey:imageKey];
     
-//    // adds also a local thumb in cache.
+    // adds also a local thumb in cache.
     NSString *thumbImageURL = [ChatManager profileThumbImageURLOf:profileId];
     NSString *thumbImageKey = [ChatDiskImageCache urlAsKey:[NSURL URLWithString:thumbImageURL]];
     [self addImageToCache:image withKey:thumbImageKey];
@@ -285,10 +246,8 @@ static ChatDiskImageCache *sharedInstance = nil;
 
 -(void)deleteObjectsFromMemoryCacheOfProfile:(NSString *)profileId {
     NSString *baseURL = [ChatManager profileBaseURL:profileId];
-    //    NSLog(@"baseURL to delete: %@", baseURL);
     NSURL *url = [NSURL URLWithString:baseURL];
     NSString *cache_key = [ChatDiskImageCache urlAsKey:url];
-    //    NSLog(@"baseURL key: %@", cache_key);
     [self deleteObjectsFromMemoryStartingWith:cache_key];
 }
 
@@ -307,7 +266,7 @@ static ChatDiskImageCache *sharedInstance = nil;
     NSURL *url = [NSURL URLWithString:thumb_photo_url];
     NSString *thumb_key = [ChatDiskImageCache urlAsKey:url];
     UIImage *image = [self getCachedImage:thumb_key];
-    NSLog(@"image: %@", image);
+    [ChatManager logDebug:@"image: %@", image];
     return image;
 }
 

@@ -228,7 +228,6 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         return;
     }
     
-    NSLog(@"DISMISSING POPUP MENU.");
     // Delegate
     if (self.delegate && [self.delegate respondsToSelector:@selector(popupMenuWillDisappear:)]) {
         [self.delegate popupMenuWillDisappear:self];

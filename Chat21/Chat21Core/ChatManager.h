@@ -48,7 +48,7 @@ static NSString *CHAT_CONFIG_KEY_LOG_LEVEL = @"log-level";
 
 @interface ChatManager : NSObject
 
-// plist properties
+// services' plist properties
 @property (nonatomic, strong) NSString *baseURL;
 @property (nonatomic, strong) NSString *archiveConversationURI;
 @property (nonatomic, strong) NSString *archiveAndCloseSupportConversationURI;
@@ -63,9 +63,7 @@ static NSString *CHAT_CONFIG_KEY_LOG_LEVEL = @"log-level";
 @property (nonatomic, strong) ChatGroupsHandler *groupsHandler;
 @property (nonatomic, strong) ChatContactsSynchronizer *contactsSynchronizer;
 @property (nonatomic, strong) ChatDiskImageCache *imageCache;
-//@property (nonatomic, strong) ChatConversationsVC * conversationsVC;
 @property (strong, nonatomic) FIRAuthStateDidChangeListenerHandle authStateDidChangeListenerHandle;
-//@property (assign, nonatomic) FIRDatabaseHandle connectedRefHandle;
 
 // CONFIG
 @property (nonatomic, strong) NSString *tenant;
