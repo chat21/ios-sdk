@@ -138,10 +138,10 @@ static NSString *CHAT_CONFIG_KEY_LOG_LEVEL = @"log-level";
 +(NSString *)profileBaseURL:(NSString *)profileId;
 
 // LOG
-+(void)logDebug:(NSString*)status, ...;
-+(void)logInfo:(NSString*)status, ...;
-+(void)logError:(NSString*)status, ...;
-+(void)logWarn:(NSString*)status, ...;
++(void)logDebug:(NSString*)text, ...;
++(void)logInfo:(NSString*)text, ...;
++(void)logError:(NSString*)text, ...;
++(void)logWarn:(NSString*)text, ...;
 
 @property (nonatomic, copy) ChatMessage *(^onBeforeMessageSend)(ChatMessage *msg);
 @property (nonatomic, copy) ChatMessage *(^onMessageNew)(ChatMessage *msg);

@@ -174,47 +174,52 @@ static ChatManager *sharedInstance = nil;
     sharedInstance.logLevel = CHAT_LOG_LEVEL_DEBUG;
 }
 
-+(void)logDebug:(NSString*)status, ... {
++(void)logDebug:(NSString*)text, ... {
     ChatManager *sharedInstance = [ChatManager getInstance];
     if (sharedInstance.logLevel >= CHAT_LOG_LEVEL_DEBUG) {
         va_list args;
-        va_start(args, status);
+        va_start(args, text);
+        NSString *log_msg = [[NSString alloc] initWithFormat:text arguments:args];
+        NSLog(@"%@", log_msg);
         va_end(args);
-        NSString * str = [[NSString alloc] initWithFormat:status arguments:args];
-        NSLog(@"%@", str);
     }
 }
 
-+(void)logInfo:(NSString*)status, ... {
++(void)logInfo:(NSString*)text, ... {
     ChatManager *sharedInstance = [ChatManager getInstance];
     if (sharedInstance.logLevel >= CHAT_LOG_LEVEL_INFO) {
         va_list args;
-        va_start(args, status);
+        va_start(args, text);
+        NSString *log_msg = [[NSString alloc] initWithFormat:text arguments:args];
+        NSLog(@"%@", log_msg);
         va_end(args);
-        NSString * str = [[NSString alloc] initWithFormat:status arguments:args];
-        NSLog(@"%@", str);
     }
 }
 
-+(void)logWarn:(NSString*)status, ... {
++(void)logWarn:(NSString*)text, ... {
     ChatManager *sharedInstance = [ChatManager getInstance];
     if (sharedInstance.logLevel >= CHAT_LOG_LEVEL_WARNING) {
         va_list args;
-        va_start(args, status);
+        va_start(args, text);
+        NSString *log_msg = [[NSString alloc] initWithFormat:text arguments:args];
+        NSLog(@"%@", log_msg);
         va_end(args);
-        NSString * str = [[NSString alloc] initWithFormat:status arguments:args];
-        NSLog(@"%@", str);
     }
 }
 
-+(void)logError:(NSString*)status, ... {
++(void)logError:(NSString*)text, ... {
     ChatManager *sharedInstance = [ChatManager getInstance];
     if (sharedInstance.logLevel >= CHAT_LOG_LEVEL_ERROR) {
+//        va_list args;
+//        va_start(args, status);
+//        va_end(args);
+//        NSString * str = [[NSString alloc] initWithFormat:status arguments:args];
+//        NSLog(@"%@", str);
         va_list args;
-        va_start(args, status);
+        va_start(args, text);
+        NSString *log_msg = [[NSString alloc] initWithFormat:text arguments:args];
+        NSLog(@"%@", log_msg);
         va_end(args);
-        NSString * str = [[NSString alloc] initWithFormat:status arguments:args];
-        NSLog(@"%@", str);
     }
 }
 
@@ -401,8 +406,8 @@ static ChatManager *sharedInstance = nil;
     }
 }
 
-// IL METODO DISPOSE NON ESEGUE IL LOGOUT PERCHè PUO' ESSERE RICHIAMATO ANCHE PER DISPORRE UNA CHAT
-// CON UTENTE CONNESSO, COME NEL CASO DI CAMBIO UTENTE.
+// DISPOSE DOESN'T LOGOUT BECAUSE CAN BE ALSO USED JUST TO "DISPOSE" A CHAT
+// TO SWITCH TO ANOTHER USER.
 -(void)dispose {
     [self removeInstanceId];
     [self.conversationsHandler dispose];
@@ -678,7 +683,7 @@ static ChatManager *sharedInstance = nil;
 -(void)removeInstanceId {
     ChatUser *user = self.loggedUser;
     if (!user) {
-        [ChatManager logDebug:@"ERROR: CAN'T REMOVE THE INSTANCE IF LOGGED USER IS NULL. Hey...did you signed out before removing InstanceID?"];
+        [ChatManager logDebug:@"ERROR: CAN'T REMOVE THE INSTANCE IF LOGGED USER IS NULL. Did you signed out before removing InstanceID?"];
         return;
     }
     NSString *user_path = [ChatUtil userPath:user.userId];
