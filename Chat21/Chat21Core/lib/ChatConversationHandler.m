@@ -294,7 +294,7 @@
 
 -(void)sendImagePlaceholderMessage:(ChatMessage *)message completion:(void (^)(ChatMessage *, NSError *))callback {
     [[ChatDB getSharedInstance] updateMessage:message.messageId status:MSG_STATUS_SENDING text:message.text snapshotAsJSONString:message.snapshotAsJSONString];
-    [self updateMessageInMemory:message.messageId status:MSG_STATUS_SENDING text:message.text imageURL:message.metadata.src];
+    [self updateMessageInMemory:message.messageId status:MSG_STATUS_SENDING text:message.text imageURL:message.metadata.src]; // TODO. in memory save synchronized, queued on a background thread
     [self notifyEvent:ChatEventMessageChanged message:message];
     [self sendMessage:message completion:^(ChatMessage *message, NSError *error) {
         callback(message, error);

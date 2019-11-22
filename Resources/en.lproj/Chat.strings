@@ -18,9 +18,9 @@
 //"NetworkError" = "An network error occurred during connection.";
 
 "FewSecondsAgoLKey" = "few seconds ago";
-"AboutAMinuteAgoLKey" = "about a minute ago";
+"AboutAMinuteAgoLKey" = "a minute ago";
 "MinutesAgoLKey" = "minutes ago";
-"AboutAnHourAgoLKey" = "about one hour ago";
+"AboutAnHourAgoLKey" = "one hour ago";
 "HoursAgoLKey" = "hours ago";
 
 // *** tabbar menu labels ***
@@ -111,7 +111,7 @@
 "copy" = "Copy";
 "info" = "Info";
 "resend" = "Resend";
-"digit message" = "Digit a message";
+"digit message" = "Type a message";
 "ReadConversationAction" = "Read";
 "UnreadConversationAction" = "Unread";
 

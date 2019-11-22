@@ -70,7 +70,7 @@ static ChatDB *sharedInstance = nil;
         if (result == SQLITE_OK) {
             char *errMsg;
             if (self.logQuery) {[ChatManager logDebug:@"**** CREATING TABLE MESSAGES..."];}
-            // added > media:BOOL, document:BOOL, link:BOOL
+            
             const char *sql_stmt_messages =
             "create table if not exists messages (messageId text primary key, conversationId text, text_body text, sender text, recipient text, status integer, timestamp real, type text, channel_type text, snapshot text, media integer, document integer, link integer)";
             if (sqlite3_exec(database, sql_stmt_messages, NULL, NULL, &errMsg) != SQLITE_OK) {
@@ -80,6 +80,16 @@ static ChatDB *sharedInstance = nil;
             else {
                 if (self.logQuery) {[ChatManager logDebug:@"Table messages successfully created."];}
             }
+            const char *sql_stmt_index_timestamp_messages =
+            "CREATE INDEX message_timestamp ON messages(timestamp);";
+            if (sqlite3_exec(database, sql_stmt_index_timestamp_messages, NULL, NULL, &errMsg) != SQLITE_OK) {
+                isSuccess = NO;
+                if (self.logQuery) {[ChatManager logDebug:@"Failed to create index on timestamp, table messages"];}
+            }
+            else {
+                if (self.logQuery) {[ChatManager logDebug:@"Index on timestamp on Table messages successfully created."];}
+            }
+            
             const char *sql_stmt_conversations =
             "create table if not exists conversations (conversationId text primary key, user text, sender text, sender_fullname, recipient text, recipient_fullname text, last_message_text text, convers_with text, convers_with_fullname text, is_new integer, timestamp real, status integer, channel_type text, snapshot text)";
             if (sqlite3_exec(database, sql_stmt_conversations, NULL, NULL, &errMsg) != SQLITE_OK) {
@@ -87,6 +97,7 @@ static ChatDB *sharedInstance = nil;
                 if (self.logQuery) {[ChatManager logError:@"Failed to create table conversations"];}
             }
             else {
+                isSuccess = YES;
                 if (self.logQuery) {[ChatManager logDebug:@"Table conversations successfully created."];}
                 [self upgradeSchema:dbpath];
             }
@@ -101,7 +112,8 @@ static ChatDB *sharedInstance = nil;
         if (self.logQuery) {[ChatManager logDebug:@"Database %@ already exists. Opening.", databasePath];}
         if (sqlite3_open(dbpath, &database) == SQLITE_OK) {
 //            [self upgradeSchema:dbpath];
-            return isSuccess;
+            [self addIndexes];
+//            return isSuccess;
         }
         else {
             isSuccess = NO;
@@ -109,6 +121,18 @@ static ChatDB *sharedInstance = nil;
         }
     }
     return isSuccess;
+}
+
+-(void)addIndexes {
+    char *errMsg;
+    const char *sql_stmt_index_timestamp_messages =
+    "CREATE INDEX message_timestamp ON messages(timestamp);";
+    if (sqlite3_exec(database, sql_stmt_index_timestamp_messages, NULL, NULL, &errMsg) != SQLITE_OK) {
+        if (self.logQuery) {[ChatManager logDebug:@"Failed to create index on timestamp, table messages: %s", errMsg];}
+    }
+    else {
+        if (self.logQuery) {[ChatManager logDebug:@"Index (timestamp) for Table messages successfully created."];}
+    }
 }
 
 -(void)upgradeSchema:(const char *)dbpath {

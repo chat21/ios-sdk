@@ -19,9 +19,9 @@
 //"NetworkError" = "Si è verificato un errore di rete durante la connessione.";
 
 "FewSecondsAgoLKey" = "pochi secondi fa";
-"AboutAMinuteAgoLKey" = "circa un minuto fa";
+"AboutAMinuteAgoLKey" = "un minuto fa";
 "MinutesAgoLKey" = "minuti fa";
-"AboutAnHourAgoLKey" = "circa un'ora fa";
+"AboutAnHourAgoLKey" = "un'ora fa";
 "HoursAgoLKey" = "ore fa";
 
 // *** tabbar menu labels ***
