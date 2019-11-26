@@ -147,10 +147,11 @@
             if (chatm.onMessageNew) {
                 message = chatm.onMessageNew(message);
                 if (message == nil) {
+                    [ChatManager logDebug:@"Handler returned null Message. Stopping pipeline."];
                     return;
                 }
             }
-            // This callback is also called for newly locally created messages (not still sent, called also with network off).
+            // This callback is also invoked by newly locally created messages (not still sent, also with network offline).
             // Then, for every "new" message received (also locally generated) we update onversation status to "read" (is_new = false).
             // Updates status only of messages not sent by me
             if (message.status < MSG_STATUS_RECEIVED && ![message.sender isEqualToString:self.senderId]) {
@@ -344,11 +345,14 @@
     message.recipient = self.recipientId;
     message.recipientFullName = self.recipientFullname;
     message.channel_type = self.channel_type;
+    // ON-BEFORE-MESSAGE-SAVE (IMPLEMENT) > I.E. SAVE ENCRYPTED
     [self createLocalMessage:message completion:^(NSString *messageId, NSError *error) {
         [ChatManager logDebug:@"Sending message type: %@ with id: %@", message.mtype, message.messageId];
-        [self sendMessage:message completion:^(ChatMessage *message, NSError *error) {
-            callback(message, error);
-        }];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            [self sendMessage:message completion:^(ChatMessage *message, NSError *error) {
+                callback(message, error);
+            }];
+        });
     }];
 }
 
@@ -404,7 +408,6 @@
 -(void)createLocalMessage:(ChatMessage *)message completion:(void(^)(NSString *messageId, NSError *error))callback {
     // save message locally
     [[ChatDB getSharedInstance] insertMessageIfNotExistsSyncronized:message completion:^{
-        // TODO URGENT! Serial queue needed to avoid conflicting in writing on the same, shared, object!
         [self insertMessageInMemoryIfNotExists:message completion:^{
             [self notifyEvent:ChatEventMessageAdded message:message];
             callback(message.messageId, nil);
